@@ -50,7 +50,7 @@ function()
 		this.saveDownloadScriptQueue(doc, root, this.downloadedScriptExecQueue.getHashTable());
 
 		var xmlSerializer = new XMLSerializer();
-		var str = XML(xmlSerializer.serializeToString(doc)).toXMLString();
+		var str = xmlSerializer.serializeToString(doc);
 
 		file = new LocalFile(this.getSettingsFile(), ">");
 		file.write(str);
