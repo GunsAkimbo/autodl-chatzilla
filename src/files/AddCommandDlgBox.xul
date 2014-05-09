@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is IRC Auto Downloader.
+   -
+   - The Initial Developer of the Original Code is
+   - David Nilsson.
+   - Portions created by the Initial Developer are Copyright (C) 2010
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -
+   - ***** END LICENSE BLOCK ***** -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<dialog
+	id="autodl"
+	title="Add a command"
+	buttons="accept,cancel"
+	buttonlabelaccept="OK"
+	buttonlabelcancel="Cancel"
+	buttonaccesskeyaccept="O"
+	buttonaccesskeycancel="a"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<script src="Constants.js"/>
+	<script src="BrowseFor.js"/>
+	<script src="Menulist.js"/>
+	<script src="AddCommandDlgBox.js"/>
+
+	<vbox id="vbox">
+		<hbox flex="1">
+			<label control="source-path" accesskey="S" value="Source path"/>
+			<textbox flex="1" id="source-path" emptytext="Empty for default source folder" tooltiptext="Base path where torrent was saved."/>
+			<button id="source-path-button" label="Browse..." accesskey="B" tooltiptext="Browse for folder."/>
+		</hbox>
+		<hbox id="dest-path-hbox1" flex="1">
+			<label control="dest-path-menulist" accesskey="D" value="Destination path"/>
+			<menulist id="dest-path-menulist" tooltiptext="Select destination path.">
+				<menupopup>
+					<menuitem label="Destination folder" id="dest-folder"/>
+					<menuitem label="Root of destination folder" id="dest-folder-root"/>
+					<menuitem label="Parent of destination folder" id="dest-folder-parent"/>
+					<menuitem label="Source folder" id="source-folder"/>
+					<menuitem label="Root of source folder" id="source-folder-root"/>
+					<menuitem label="Parent of source folder" id="source-folder-parent"/>
+				</menupopup>
+			</menulist>
+		</hbox>
+		<hbox id="dest-path-hbox2" flex="1">
+			<label control="dest-path" accesskey="t" value="Destination base folder"/>
+			<textbox flex="1" id="dest-path" emptytext="Destination base folder"/>
+			<button id="dest-path-button" label="Browse..." accesskey="r" tooltiptext="Browse for folder."/>
+		</hbox>
+		<hbox flex="1">
+			<label id="exclude-files-label" control="exclude-files"/>
+			<textbox flex="1" id="exclude-files"/>
+		</hbox>
+		<checkbox id="checkbox1"/>
+		<checkbox id="checkbox2"/>
+	</vbox>
+</dialog>

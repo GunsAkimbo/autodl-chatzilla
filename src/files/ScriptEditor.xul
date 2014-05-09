@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is IRC Auto Downloader.
+   -
+   - The Initial Developer of the Original Code is
+   - David Nilsson.
+   - Portions created by the Initial Developer are Copyright (C) 2010
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -
+   - ***** END LICENSE BLOCK ***** -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<dialog
+	id="autodl"
+	title="IRC Auto Downloader - Script Editor"
+	buttons="accept,cancel"
+	buttonlabelaccept="OK"
+	buttonlabelcancel="Cancel"
+	buttonaccesskeyaccept="O"
+	buttonaccesskeycancel="a"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<script src="Constants.js"/>
+	<script src="Utils.js"/>
+	<script src="OpenDialog.js"/>
+	<script src="MyListBox.js"/>
+	<script src="ScriptEditor.js"/>
+
+	<hbox flex="1">
+		<vbox>
+			<listbox id="listbox" flex="1" tooltiptext="All of your scripts.">
+				<listitem/>
+			</listbox>
+			<hbox>
+				<button id="button-new" label="New" flex="1" accesskey="N" tooltiptext="Create a new script."/>
+				<button id="button-remove" label="Remove" flex="1" accesskey="R" tooltiptext="Remove the selected script."/>
+			</hbox>
+		</vbox>
+		<vbox flex="1">
+			<vbox>
+				<grid flex="1">
+					<columns>
+						<column/>
+						<column flex="1"/>
+					</columns>
+					<rows>
+						<row>
+							<label control="script-name" accesskey="S" value="Script name"/>
+							<textbox id="script-name" emptytext="Name your script" tooltiptext="Name your script so you can use it."/>
+						</row>
+					</rows>
+				</grid>
+				<hbox>
+					<button flex="1" id="button-extract" label="extract" accesskey="e" tooltiptext="Add an 'extract files' command. This command only works if your torrent client is running on this computer."/>
+					<button flex="1" id="button-copy" label="copy" accesskey="c" tooltiptext="Add a 'copy files' command. This command only works if your torrent client is running on this computer."/>
+					<button flex="1" id="button-move" label="move" accesskey="M" tooltiptext="Add a 'move files' command. This command only works if your torrent client is running on this computer."/>
+				</hbox>
+				<hbox>
+					<button flex="1" id="button-delete" label="delete" accesskey="d" tooltiptext="Add a 'delete files' command. This command only works if your torrent client is running on this computer."/>
+					<button flex="1" id="button-webui" label="webui" accesskey="w" tooltiptext="Add a webui command. This command only works if your torrent client supports webui."/>
+					<button flex="1" id="button-exec" label="exec" accesskey="x" tooltiptext="Add an 'execute program' command. This will execute a command on this computer."/>
+				</hbox>
+			</vbox>
+			<textbox flex="1" id="textbox-commands" multiline="true" wrap="off" emptytext="Add your script commands here..." tooltiptext="Your script commands."/>
+		</vbox>
+	</hbox>
+</dialog>

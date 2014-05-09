@@ -1,0 +1,3 @@
+If this is an update of IRC Auto Downloader and ChatZilla is already running, then you must type "/reload-plugin autodl" (without the quotes) to load the updated version of the IRC Auto Downloader. Or you could just restart ChatZilla.
+
+If this is a fresh install of IRC Auto Downloader and ChatZilla is already running, you must restart ChatZilla before you can use IRC Auto Downloader.

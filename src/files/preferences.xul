@@ -1,0 +1,329 @@
+<?xml version="1.0"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is IRC Auto Downloader.
+   -
+   - The Initial Developer of the Original Code is
+   - David Nilsson.
+   - Portions created by the Initial Developer are Copyright (C) 2010
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -
+   - ***** END LICENSE BLOCK ***** -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<dialog
+	id="autodl"
+	title="IRC Auto Downloader - Preferences"
+	buttons="accept,cancel"
+	buttonlabelaccept="OK"
+	buttonlabelcancel="Cancel"
+	buttonaccesskeyaccept="O"
+	buttonaccesskeycancel="a"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<script src="Constants.js"/>
+	<script src="Menulist.js"/>
+	<script src="Utils.js"/>
+	<script src="OpenDialog.js"/>
+	<script src="BrowseFor.js"/>
+	<script src="SetElemOptions2.js"/>
+	<script src="UploadMethod.js"/>
+	<script src="ScriptExecDialog.js"/>
+	<script src="preferences.js"/>
+
+	<tabbox flex="1">
+		<tabs>
+			<tab label="General" accesskey="G"/>
+			<tab label="Action" accesskey="o"/>
+			<tab label="Webui" accesskey="W"/>
+			<tab label="FTP" accesskey="F"/>
+			<tab label="Scripts" accesskey="S"/>
+			<tab label="Programs" accesskey="P"/>
+			<tab label="Advanced" accesskey="d"/>
+		</tabs>
+		<tabpanels flex="1">
+			<!-- General tab -->
+			<tabpanel>
+				<grid flex="1">
+					<columns>
+						<column/>
+						<column flex="1"/>
+					</columns>
+					<rows>
+						<row>
+							<label control="temp-download-folder" value="Temporary download folder" accesskey="e"/>
+							<textbox id="temp-download-folder" emptytext="Press the Browse button to browse for folder" tooltiptext="Folder where we'll put temporary torrent downloads. Default is plugin folder."/>
+							<button id="temp-download-folder-button" label="Browse..." accesskey="B" tooltiptext="Click here to browse for folder."/>
+						</row>
+						<row>
+							<label control="max-saved-releases" value="Maximum saved releases" accesskey="x"/>
+							<textbox id="max-saved-releases" type="number" tooltiptext="Maximum number of downloaded torrent releases to save in history file."/>
+						</row>
+						<checkbox id="save-download-history" label="Save download history" accesskey="v" tooltiptext="Check this to save download history to a file, and restore it when starting auto downloader."/>
+						<checkbox id="download-dupe-releases" label="Download duplicate releases" accesskey="n" tooltiptext="Check this to download releases you've already downloaded if they're re-announced."/>
+						<hbox>
+							<label control="update-menulist" value="Automatic updates" accesskey="t"/>
+							<menulist id="update-menulist" selectedIndex="0" flex="0"
+									tooltiptext="Select automatic update method">
+								<menupopup>
+									<menuitem label="Update automatically" id="update-auto"/>
+									<menuitem label="Ask" id="update-ask"/>
+									<menuitem label="Don't check for updates" id="update-disabled"/>
+								</menupopup>
+							</menulist>
+						</hbox>
+					</rows>
+				</grid>
+			</tabpanel>
+
+			<!-- Action tab -->
+			<tabpanel>
+				<vbox flex="1">
+					<hbox>
+						<label control="um-menulist" value="Choose .torrent action" accesskey="C"/>
+						<menulist id="um-menulist" selectedIndex="0" flex="0"
+								tooltiptext="Select which method will be used to send the .torrent file to your torrent client.">
+							<menupopup>
+								<menuitem label="Save to Watch Folder" id="um-menuitem-watch-folder"/>
+								<menuitem label="&#xb5;Torrent Webui Upload" id="um-menuitem-webui"/>
+								<menuitem label="FTP Upload" id="um-menuitem-ftp"/>
+								<menuitem label="Run Program" id="um-menuitem-tool"/>
+								<menuitem label="Save to Dynamic Folder" id="um-menuitem-dyndir"/>
+							</menupopup>
+						</menulist>
+					</hbox>
+					<deck id="um-deck" selectedIndex="0">
+						<!-- Save to Watch Folder settings -->
+						<grid flex="1">
+							<columns>
+								<column/>
+								<column flex="1"/>
+								<column/>
+							</columns>
+
+							<rows>
+								<row>
+									<label control="um-watch-folder" value="Torrent client watch folder" accesskey="r"/>
+									<textbox id="um-watch-folder" emptytext="Press the Browse button to browse for folder" tooltiptext="Folder where your torrent client checks for new torrent files."/>
+									<button id="um-watch-folder-button" label="Browse..." accesskey="B" tooltiptext="Click here to browse for folder."/>
+								</row>
+							</rows>
+						</grid>
+
+						<!-- uTorrent Webui settings -->
+						<vbox flex="1">
+							<description>Only &#xb5;Torrent webui is supported.</description>
+							<description>Settings are in Preferences -> Webui</description>
+						</vbox>
+
+						<!-- FTP Upload settings -->
+						<vbox flex="1">
+							<description>Connection settings are in Preferences -> FTP</description>
+							<hbox flex="1">
+								<label control="um-ftp-path" value="FTP path" accesskey="F"/>
+								<textbox flex="1" id="um-ftp-path" emptytext="FTP path" tooltiptext="The path on the FTP where we save the torrent file. Make sure this path exists. Example: /save/files/here"/>
+							</hbox>
+						</vbox>
+
+						<!-- Run Program settings -->
+						<grid>
+							<columns>
+								<column/>
+								<column flex="1"/>
+								<column/>
+							</columns>
+							<rows>
+								<row>
+									<label control="um-tool-command" value="Command" accesskey="n"/>
+									<textbox id="um-tool-command" emptytext="Press the Browse button to browse for program" tooltiptext="The program, script or shell command to run after downloading a .torrent file."/>
+									<button id="um-tool-command-button" label="Browse..." accesskey="B" tooltiptext="Click here to browse for a program."/>
+								</row>
+								<row>
+									<label control="um-tool-args" value="Arguments" accesskey="r"/>
+									<textbox id="um-tool-args" emptytext="Program arguments" tooltiptext="Arguments passed to the program, script or shell command."/>
+								</row>
+							</rows>
+						</grid>
+
+						<!-- Save to Dynamic Folder settings -->
+						<grid>
+							<columns>
+								<column/>
+								<column flex="1"/>
+								<column/>
+							</columns>
+							<rows>
+								<row>
+									<label control="um-dyndir-basedir" value="Base Folder" accesskey="e"/>
+									<textbox id="um-dyndir-basedir" emptytext="Press the Browse button to browse for folder" tooltiptext="Base folder of downloads."/>
+									<button id="um-dyndir-basedir-button" label="Browse..." accesskey="r" tooltiptext="Click here to browse for base folder."/>
+								</row>
+								<row>
+									<label control="um-dyndir-dyndir" value="Dynamic Folder Name" accesskey="n"/>
+									<textbox id="um-dyndir-dyndir" emptytext="Name of dynamic folder, eg. $(month)$(day)" tooltiptext="The name of the folder where the downloads will be saved. If you want it to be current month and day, then use $(month)$(day)"/>
+								</row>
+							</rows>
+						</grid>
+					</deck>
+				</vbox>
+			</tabpanel>
+
+			<!-- Webui -->
+			<vbox flex="1">
+				<grid>
+					<columns>
+						<column/>
+						<column flex="1"/>
+						<column/>
+						<column flex="1"/>
+					</columns>
+					<rows>
+						<description>Only &#xb5;Torrent Webui is supported</description>
+						<row>
+							<label control="webui-user" value="User name" accesskey="e"/>
+							<textbox id="webui-user" tooltiptext="The user name required to access the Webui interface."/>
+							<label control="webui-password" value="Password" accesskey="r"/>
+							<textbox id="webui-password" type="password" tooltiptext="The password required to access the Webui interface."/>
+						</row>
+						<row>
+							<label control="webui-hostname" value="IP Address" accesskey="I"/>
+							<textbox id="webui-hostname" tooltiptext="The IP address of the computer running &#xb5;Torrent with webui enabled. Don't use a hostname since &#xb5;Torrent doesn't seem to like that."/>
+							<label control="webui-port" value="Port" accesskey="t"/>
+							<textbox id="webui-port" type="number" min="1" max="65535" tooltiptext="The port number &#xb5;Torrent webui is listening on."/>
+						</row>
+						<checkbox id="webui-https" label="Use HTTPS (SSL)" accesskey="H" tooltiptext="Check this if we should connect using HTTPS, and not HTTP. You need stunnel installed. See &#xb5;Torrent webui FAQ."/>
+					</rows>
+				</grid>
+			</vbox>
+
+			<!-- FTP -->
+			<vbox flex="1">
+				<grid>
+					<columns>
+						<column/>
+						<column flex="1"/>
+						<column/>
+						<column flex="1"/>
+					</columns>
+					<rows>
+						<row>
+							<label control="ftp-user" value="User name" accesskey="e"/>
+							<textbox id="ftp-user" tooltiptext="The user name required to access the FTP."/>
+							<label control="ftp-password" value="Password" accesskey="r"/>
+							<textbox id="ftp-password" type="password" tooltiptext="The password required to access the FTP."/>
+						</row>
+						<row>
+							<label control="ftp-hostname" value="Hostname" accesskey="H"/>
+							<textbox id="ftp-hostname" tooltiptext="The hostname or IP address of the FTP server."/>
+							<label control="ftp-port" value="Port" accesskey="t"/>
+							<textbox id="ftp-port" type="number" min="1" max="65535" tooltiptext="The port number the FTP server is listening on. FTP servers default to port 21."/>
+						</row>
+					</rows>
+				</grid>
+			</vbox>
+
+			<!-- Scripts tab -->
+			<vbox flex="1">
+				<groupbox>
+					<hbox>
+						<label control="sau-secs" value="Script executed" accesskey="c"/>
+						<textbox id="sau-secs" type="number" size="5"/>
+						<label control="sau-secs" value="seconds after torrent is uploaded."/>
+					</hbox>
+					<hbox>
+						<button id="sau-button" label="Script..." accesskey="r"/>
+						<textbox id="sau" flex="1" tooltiptext="This script is executed after uploading a .torrent file to your torrent client."/>
+					</hbox>
+				</groupbox>
+
+				<groupbox>
+					<caption label="This requires webui enabled in your client"/>
+					<hbox>
+						<button id="sad-button" label="Script..." accesskey="i"/>
+						<textbox id="sad" flex="1" tooltiptext="This script is executed after all torrent data have been downloaded and you have reached a certain ratio and/or seeded enough."/>
+						<label control="sad" value="executed after torrent data is downloaded."/>
+					</hbox>
+					<hbox>
+						<checkbox id="sad-ratio-checkbox" label="Ratio" accesskey="t" tooltiptext="Check it to require a minimum ratio before executing the script."/>
+						<textbox id="sad-ratio-textbox" type="number" decimalplaces="2" increment="0.1" size="5" tooltiptext="Minimum ratio."/>
+						<menulist id="sad-menulist">
+							<menupopup>
+								<menuitem label="AND" id="sad-and"/>
+								<menuitem label="OR" id="sad-or"/>
+							</menupopup>
+						</menulist>
+						<checkbox id="sad-seeding-time-checkbox" label="Seeding time" accesskey="e" tooltiptext="Check it to require a minimum seeding time before executing the script."/>
+						<textbox id="sad-seeding-time-textbox" type="number" decimalplaces="1" size="5" tooltiptext="Minimum seeding time. It's assumed you're seeding 24/7."/>
+						<label control="sad-seeding-time-textbox" value="hours"/>
+					</hbox>
+				</groupbox>
+			</vbox>
+
+			<!-- Programs tab -->
+			<tabpanel>
+				<grid flex="1">
+					<columns>
+						<column/>
+						<column flex="1"/>
+						<column/>
+					</columns>
+
+					<rows>
+						<row>
+							<label control="path-rar" value="rar.exe or unrar" accesskey="r"/>
+							<textbox id="path-rar" emptytext="Press the Browse button to browse for rar.exe or unrar" tooltiptext="Path to rar.exe, unrar.exe or unrar so we can extract rar archives. Must be the command line version, not the WinRAR.exe executable. You can download it for free here: http://www.rarlab.com/download.htm (Windows/Mac OS X/Linux/BSD)"/>
+							<button id="path-rar-button" label="Browse..." accesskey="B" tooltiptext="Click here to browse for rar or unrar executable."/>
+						</row>
+						<row>
+							<label control="path-utorrent" value="uTorrent.exe" accesskey="t"/>
+							<textbox id="path-utorrent" emptytext="Press the Browse button to browse for uTorrent.exe" tooltiptext="Needed only for saving torrents to a dynamic folder."/>
+							<button id="path-utorrent-button" label="Browse..." accesskey="e" tooltiptext="Click here to browse for uTorrent.exe."/>
+						</row>
+					</rows>
+				</grid>
+			</tabpanel>
+
+			<!-- Advanced tab -->
+			<tabpanel>
+				<grid flex="1">
+					<columns>
+						<column/>
+						<column flex="1"/>
+						<column/>
+					</columns>
+
+					<rows>
+						<row>
+							<label control="download-user-agent" value="Download user agent" accesskey="n"/>
+							<textbox id="download-user-agent" emptytext="Leave blank for default" tooltiptext="User agent used when downloading torrent files from your torrent site."/>
+						</row>
+						<row>
+							<label control="max-download-retry-time" value="Maximum download retry time" accesskey="x"/>
+							<textbox id="max-download-retry-time" type="number" tooltiptext="Retry downloads if an error occurs but stop after this timeout in seconds is reached."/>
+							<label value="seconds"/>
+						</row>
+						<row>
+							<label control="debug-output-level" value="Debug output level" accesskey="l"/>
+							<textbox id="debug-output-level" type="number" min="-1" max="5" tooltiptext="Default is 3, set it to 5 for debug output, and -1 to turn off all messages."/>
+						</row>
+						<checkbox id="debug-debug" label="Debug" accesskey="e" tooltiptext="Extra debug output"/>
+					</rows>
+				</grid>
+			</tabpanel>
+		</tabpanels>
+	</tabbox>
+</dialog>

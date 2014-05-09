@@ -1,0 +1,354 @@
+<?xml version="1.0"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is IRC Auto Downloader.
+   -
+   - The Initial Developer of the Original Code is
+   - David Nilsson.
+   - Portions created by the Initial Developer are Copyright (C) 2010
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -
+   - ***** END LICENSE BLOCK ***** -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<dialog
+	id="autodl"
+	title="IRC Auto Downloader - Filters"
+	buttons="accept,cancel"
+	buttonlabelaccept="OK"
+	buttonlabelcancel="Cancel"
+	buttonaccesskeyaccept="O"
+	buttonaccesskeycancel="a"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<script src="Constants.js"/>
+	<script src="Menulist.js"/>
+	<script src="Utils.js"/>
+	<script src="OpenDialog.js"/>
+	<script src="BrowseFor.js"/>
+	<script src="SetElemOptions2.js"/>
+	<script src="UploadMethod.js"/>
+	<script src="FilterConstants.js"/>
+	<script src="MyListBox.js"/>
+	<script src="filters.js"/>
+
+	<hbox flex="1">
+		<vbox>
+			<listbox id="filter-listbox" flex="1">
+				<listitem/>
+			</listbox>
+			<hbox>
+				<button id="filter-add" flex="1" label="New" accesskey="w" tooltiptext="Add a new filter."/>
+				<button id="filter-remove" flex="1" label="Remove" accesskey="e" tooltiptext="Remove the currently selected filter."/>
+			</hbox>
+		</vbox>
+
+		<tabbox flex="1">
+			<tabs>
+				<tab label="General" accesskey="G"/>
+				<tab label="TV/Movies" accesskey="V"/>
+				<tab label="Music" accesskey="M"/>
+				<tab label="Advanced" accesskey="d"/>
+				<tab label="Action" accesskey="o"/>
+			</tabs>
+			<tabpanels>
+				<!-- General tab -->
+				<tabpanel>
+					<vbox flex="1">
+						<checkbox id="filter-enabled" label="Enabled" accesskey="b" tooltiptext="Check it to enable this filter."/>
+						<grid>
+							<columns>
+								<column/>
+								<column flex="1"/>
+							</columns>
+							<rows>
+								<row>
+									<label control="filter-name" value="Display name" accesskey="p"/>
+									<textbox id="filter-name" emptytext="Name your filter" tooltiptext="The name of this filter displayed in the list box to the left." style="width: 30em;"/>
+								</row>
+								<row>
+									<label control="match-releases" value="Match releases" accesskey="t"/>
+									<textbox id="match-releases" emptytext="Optional. Releases you want, eg. Lost*,The?Simpsons*" tooltiptext="All torrent names, separated by commas. Wildcards are allowed. This is optional. Example: the.office*,Lost.*,*simpsons*"/>
+								</row>
+								<row>
+									<label control="except-releases" value="Except releases" accesskey="x"/>
+									<textbox id="except-releases" emptytext="Optional. Releases you don't want" tooltiptext="If your match-releases grabs some unwanted releases, add the releases you don't want here, separated by commas. Wildcards are allowed. This is optional."/>
+								</row>
+								<row>
+									<button id="match-sites-button" label="Match sites" accesskey="s" tooltiptext="Add a site"/>
+									<textbox id="match-sites" emptytext="Optional. List of sites" tooltiptext="List of sites we should use, separated by commas. Wildcards are allowed. This is optional. Example: *mysite*"/>
+								</row>
+								<row>
+									<label control="minimum-size" value="Minimum size" accesskey="z"/>
+									<textbox id="minimum-size" emptytext="Optional. Minimum size eg. 500MB" tooltiptext="Minimum size of the release. This is optional. Examples: 500MB, 3.5GB, 3.5 GB, 100KB"/>
+								</row>
+								<row>
+									<label control="maximum-size" value="Maximum size" accesskey="i"/>
+									<textbox id="maximum-size" emptytext="Optional. Maximum size eg. 2.5GB" tooltiptext="Maximum size of the release. This is optional. Examples: 500MB, 3.5GB, 3.5 GB, 100KB"/>
+								</row>
+							</rows>
+						</grid>
+					</vbox>
+				</tabpanel>
+
+				<!-- TV/Movies tab -->
+				<tabpanel>
+					<vbox flex="1">
+						<grid>
+							<columns>
+								<column/>
+								<column flex="1"/>
+							</columns>
+							<rows>
+								<row>
+									<label control="tv-show" value="TV Show/Movie" accesskey="S"/>
+									<textbox id="tv-show" emptytext="Optional. TV show or movie, eg. The Simpsons, Lost" tooltiptext="The TV shows or movies, separated by commas. Wildcards are allowed."/>
+								</row>
+								<row>
+									<label control="tv-seasons" value="Seasons" accesskey="n"/>
+									<textbox id="tv-seasons" emptytext="Optional, eg. 6-9,11" tooltiptext="The allowed seasons, separated by commas."/>
+								</row>
+								<row>
+									<label control="tv-episodes" value="Episodes" accesskey="p"/>
+									<textbox id="tv-episodes" emptytext="Optional, eg. 1-7,11,13,19-25" tooltiptext="The allowed episodes, separated by commas."/>
+								</row>
+								<row>
+									<button id="add-resolution-button" label="Resolutions" type="menu" accesskey="l" tooltiptext="Add resolution.">
+										<menupopup id="add-resolution-menupopup"/>
+									</button>
+									<textbox id="tv-resolutions" emptytext="Optional. Resolution, eg. 720p, 1080p" tooltiptext="The resolutions, separated by commas. Wildcards are allowed."/>
+								</row>
+								<row>
+									<button id="add-encoder-button" label="Encoders" type="menu" accesskey="c" tooltiptext="Add encoder.">
+										<menupopup id="add-encoder-menupopup"/>
+									</button>
+									<textbox id="tv-encoders" emptytext="Optional. Encoder, eg. x264, xvid" tooltiptext="The encoders, separated by commas. Wildcards are allowed."/>
+								</row>
+								<row>
+									<button id="add-source-button" label="Sources" type="menu" accesskey="r" tooltiptext="Add source.">
+										<menupopup id="add-source-menupopup"/>
+									</button>
+									<textbox id="tv-sources" emptytext="Optional. Source, eg. HDTV, DSR" tooltiptext="The sources, separated by commas. Wildcards are allowed."/>
+								</row>
+								<row>
+									<label control="tv-year" value="Years" accesskey="Y"/>
+									<textbox id="tv-year" emptytext="Optional. Years, eg. 1999,2005-2007" tooltiptext="The years, separated by commas. Example: 1999,2005-2007"/>
+								</row>
+							</rows>
+						</grid>
+					</vbox>
+				</tabpanel>
+
+				<!-- Music tab -->
+				<tabpanel>
+					<vbox flex="1">
+						<grid>
+							<columns>
+								<column/>
+								<column flex="1"/>
+							</columns>
+							<rows>
+								<description>Waffles and What.CD</description>
+								<row>
+									<label control="match-year" value="Years" accesskey="Y"/>
+									<textbox id="match-year" emptytext="Optional. Years, eg. 1999,2005-2007" tooltiptext="The years, separated by commas. Example: 1999,2005-2007"/>
+								</row>
+								<row>
+									<label control="match-artist" value="Artists" accesskey="r"/>
+									<textbox id="match-artist" emptytext="Optional. Artists, eg. Artist1,*artist*" tooltiptext="The artists, separated by commas. Wildcards are allowed. Example: Artist1,*artist*"/>
+								</row>
+								<row>
+									<label control="match-album" value="Albums" accesskey="s"/>
+									<textbox id="match-album" emptytext="Optional. Albums, eg. Album1,*album*" tooltiptext="The albums, separated by commas. Wildcards are allowed. Example: Album1,*album*"/>
+								</row>
+								<row>
+									<button id="add-format-button" label="Formats" type="menu" accesskey="F" tooltiptext="Add format.">
+										<menupopup id="add-format-menupopup"/>
+									</button>
+									<textbox id="match-format" emptytext="Optional. Formats, eg. MP3,FLAC" tooltiptext="The formats, separated by commas. Wildcards are allowed. Example: MP3,FLAC"/>
+								</row>
+								<row>
+									<button id="add-bitrate-button" label="Bitrates" type="menu" accesskey="B" tooltiptext="Add bitrate. These are the most common bitrates, but you can add your own birates manually in the textbox.">
+										<menupopup id="add-bitrate-menupopup"/>
+									</button>
+									<textbox id="match-bitrate" emptytext="Optional. Bitrates, eg. 320,V0*,*Lossless" tooltiptext="The bitrates, separated by commas. Wildcards are allowed. Example: 320,V0*,*Lossless"/>
+								</row>
+								<row>
+									<button id="add-media-button" label="Media" type="menu" accesskey="i" tooltiptext="Add medium.">
+										<menupopup id="add-media-menupopup"/>
+									</button>
+									<textbox id="match-media" emptytext="Optional. Media, eg. CD,WEB" tooltiptext="The media, separated by commas. Wildcards are allowed. Example: CD,WEB"/>
+								</row>
+								<row>
+									<label control="match-tags" value="Tags" accesskey="T"/>
+									<textbox id="match-tags" emptytext="Optional. Tags, eg. hip hop, rock" tooltiptext="The required tags, separated by commas. Wildcards are allowed. Example: tag1,tag2,tag3"/>
+								</row>
+								<hbox>
+									<label control="match-scene" value="Scene" accesskey="n"/>
+									<menulist id="match-scene" tooltiptext="Do you want scene releases?"/>
+
+									<label control="match-log" value="Log" accesskey="L"/>
+									<menulist id="match-log" tooltiptext="Do you want releases with log files?"/>
+
+									<label control="match-cue" value="Cue" accesskey="c"/>
+									<menulist id="match-cue" tooltiptext="Do you want releases with cue files?"/>
+								</hbox>
+							</rows>
+						</grid>
+					</vbox>
+				</tabpanel>
+
+				<!-- Advanced tab -->
+				<tabpanel>
+					<vbox flex="1">
+						<grid>
+							<columns>
+								<column/>
+								<column flex="1"/>
+							</columns>
+							<rows>
+								<row>
+									<label control="match-categories" value="Match categories" accesskey="c"/>
+									<textbox id="match-categories" emptytext="Optional. Categories you want" tooltiptext="The categories you want, separated by commas. Wildcards are allowed. This is optional."/>
+								</row>
+								<row>
+									<label control="except-categories" value="Except categories" accesskey="p"/>
+									<textbox id="except-categories" emptytext="Optional. Categories you don't want" tooltiptext="The categories you don't want, separated by commas. Wildcards are allowed. This is optional."/>
+								</row>
+								<row>
+									<label control="match-uploaders" value="Match uploaders" accesskey="t"/>
+									<textbox id="match-uploaders" emptytext="Optional. List of allowed uploaders" tooltiptext="List of uploaders, separated by commas. Wildcards are allowed. This is optional."/>
+								</row>
+								<row>
+									<label control="except-uploaders" value="Except uploaders" accesskey="l"/>
+									<textbox id="except-uploaders" emptytext="Optional. List of bad uploaders" tooltiptext="List of uploaders you don't like, separated by commas. Wildcards are allowed. This is optional."/>
+								</row>
+								<row>
+									<button id="except-sites-button" label="Except sites" accesskey="s" tooltiptext="Add a site"/>
+									<textbox id="except-sites" emptytext="Optional. List of sites you don't want to use" tooltiptext="List of sites we should not use, separated by commas. Wildcards are allowed. This is optional. Example: *yoursite*"/>
+								</row>
+								<row>
+									<label control="maximum-pretime" value="Maximum pretime" accesskey="r"/>
+									<textbox id="maximum-pretime" emptytext="Optional. Maximum pretime eg. 10min 3s" tooltiptext="Maximum pretime of the release. This is optional. Examples (without the ''): '4 secs', '4 weeks', '10 mins 7 secs', '5 d 10h 4s'"/>
+								</row>
+								<row>
+									<label control="maximum-triggers" value="Maximum triggers" accesskey="x"/>
+									<textbox id="maximum-triggers" type="number" tooltiptext="Maximum number of times this filter can be triggered before it's automatically disabled."/>
+								</row>
+							</rows>
+						</grid>
+					</vbox>
+				</tabpanel>
+
+				<!-- Action tab -->
+				<groupbox>
+					<caption>
+						<checkbox id="um-override-global" label="Override global torrent action" tooltiptext="Check this to override global torrent action in Preferences."/>
+					</caption>
+					<vbox flex="1">
+						<hbox>
+							<label control="um-menulist" value="Choose .torrent action" accesskey="C"/>
+							<menulist id="um-menulist" selectedIndex="0" flex="0"
+									tooltiptext="Select which method will be used to send the .torrent file to your torrent client.">
+								<menupopup>
+									<menuitem label="Save to Watch Folder" id="um-menuitem-watch-folder"/>
+									<menuitem label="&#xb5;Torrent Webui Upload" id="um-menuitem-webui"/>
+									<menuitem label="FTP Upload" id="um-menuitem-ftp"/>
+									<menuitem label="Run Program" id="um-menuitem-tool"/>
+									<menuitem label="Save to Dynamic Folder" id="um-menuitem-dyndir"/>
+								</menupopup>
+							</menulist>
+						</hbox>
+						<deck id="um-deck" selectedIndex="0">
+							<!-- Save to Watch Folder settings -->
+							<grid flex="1">
+								<columns>
+									<column/>
+									<column flex="1"/>
+									<column/>
+								</columns>
+
+								<rows>
+									<row>
+										<label control="um-watch-folder" value="Torrent client watch folder" accesskey="r"/>
+										<textbox id="um-watch-folder" emptytext="Press the Browse button to browse for folder" tooltiptext="Folder where your torrent client checks for new torrent files."/>
+										<button id="um-watch-folder-button" label="Browse..." accesskey="B" tooltiptext="Click here to browse for folder."/>
+									</row>
+								</rows>
+							</grid>
+
+							<!-- uTorrent Webui settings -->
+							<vbox flex="1">
+								<description>Only &#xb5;Torrent webui is supported.</description>
+								<description>Settings are in Preferences -> Webui</description>
+							</vbox>
+
+							<!-- FTP Upload settings -->
+							<vbox flex="1">
+								<description>Connection settings are in Preferences -> FTP</description>
+								<hbox flex="1">
+									<label control="um-ftp-path" value="FTP path" accesskey="F"/>
+									<textbox flex="1" id="um-ftp-path" emptytext="FTP path" tooltiptext="The path on the FTP where we save the torrent file. Make sure this path exists. Example: /save/files/here"/>
+								</hbox>
+							</vbox>
+
+							<!-- Run Program settings -->
+							<grid>
+								<columns>
+									<column/>
+									<column flex="1"/>
+									<column/>
+								</columns>
+								<rows>
+									<row>
+										<label control="um-tool-command" value="Command" accesskey="n"/>
+										<textbox id="um-tool-command" emptytext="Press the Browse button to browse for program" tooltiptext="The program, script or shell command to run after downloading a .torrent file."/>
+										<button id="um-tool-command-button" label="Browse..." accesskey="B" tooltiptext="Click here to browse for a program."/>
+									</row>
+									<row>
+										<label control="um-tool-args" value="Arguments" accesskey="r"/>
+										<textbox id="um-tool-args" emptytext="Program arguments" tooltiptext="Arguments passed to the program, script or shell command."/>
+									</row>
+								</rows>
+							</grid>
+
+							<!-- Save to Dynamic Folder settings -->
+							<grid>
+								<columns>
+									<column/>
+									<column flex="1"/>
+									<column/>
+								</columns>
+								<rows>
+									<row>
+										<label control="um-dyndir-basedir" value="Base Folder" accesskey="e"/>
+										<textbox id="um-dyndir-basedir" emptytext="Press the Browse button to browse for folder" tooltiptext="Base folder of downloads."/>
+										<button id="um-dyndir-basedir-button" label="Browse..." accesskey="r" tooltiptext="Click here to browse for base folder."/>
+									</row>
+									<row>
+										<label control="um-dyndir-dyndir" value="Dynamic Folder Name" accesskey="n"/>
+										<textbox id="um-dyndir-dyndir" emptytext="Name of dynamic folder, eg. $(month)$(day)" tooltiptext="The name of the folder where the downloads will be saved. If you want it to be current month and day, then use $(month)$(day)"/>
+									</row>
+								</rows>
+							</grid>
+						</deck>
+					</vbox>
+				</groupbox>
+			</tabpanels>
+		</tabbox>
+	</hbox>
+</dialog>

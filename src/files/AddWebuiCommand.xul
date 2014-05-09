@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is IRC Auto Downloader.
+   -
+   - The Initial Developer of the Original Code is
+   - David Nilsson.
+   - Portions created by the Initial Developer are Copyright (C) 2010
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -
+   - ***** END LICENSE BLOCK ***** -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<dialog
+	id="autodl"
+	title="Add webui command"
+	buttons="accept,cancel"
+	buttonlabelaccept="OK"
+	buttonlabelcancel="Cancel"
+	buttonaccesskeyaccept="O"
+	buttonaccesskeycancel="a"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<script src="Constants.js"/>
+	<script src="Menulist.js"/>
+	<script src="AddWebuiCommand.js"/>
+
+	<vbox>
+		<hbox>
+			<label control="menulist" value="Command" accesskey="C"/>
+			<menulist id="menulist" tooltiptext="Choose webui command" flex="1">
+				<menupopup>
+					<menuitem label="Set max upload speed" id="webui-set-max-upload-speed"/>
+					<menuitem label="Set max download speed" id="webui-set-max-download-speed"/>
+					<menuitem label="Set label" id="webui-set-label"/>
+					<menuitem label="Start torrent" id="webui-start-torrent"/>
+					<menuitem label="Stop torrent" id="webui-stop-torrent"/>
+					<menuitem label="Pause torrent" id="webui-pause-torrent"/>
+					<menuitem label="Unpause torrent" id="webui-unpause-torrent"/>
+					<menuitem label="Force start torrent" id="webui-force-start-torrent"/>
+					<menuitem label="Recheck torrent" id="webui-recheck-torrent"/>
+					<menuitem label="Remove torrent (not data)" id="webui-remove-torrent"/>
+					<menuitem label="Remove torrent and data" id="webui-remove-torrent-and-data"/>
+					<!--
+					TODO: These don't work yet, maybe requires uTorrent 2.1+.
+					<menuitem label="Queue bottom" id="webui-queue-bottom"/>
+					<menuitem label="Queue top" id="webui-queue-top"/>
+					<menuitem label="Queue up" id="webui-queue-up"/>
+					<menuitem label="Queue down" id="webui-queue-down"/>
+					-->
+				</menupopup>
+			</menulist>
+		</hbox>
+		<deck id="deck">
+			<hbox id="id-webui-set-max-upload-speed">
+				<label control="ulspeed" value="Max upload speed" accesskey="M"/>
+				<textbox id="ulspeed" type="number" tooltiptext="Max upload speed in kB/s." flex="1"/>
+				<label control="ulspeed" value="kB/s"/>
+			</hbox>
+
+			<hbox id="id-webui-set-max-download-speed">
+				<label control="dlspeed" value="Max download speed" accesskey="M"/>
+				<textbox id="dlspeed" type="number" tooltiptext="Max download speed in kB/s." flex="1"/>
+				<label control="dlspeed" value="kB/s"/>
+			</hbox>
+
+			<hbox id="id-webui-set-label">
+				<label control="torrent-label" value="Torrent label" accesskey="T"/>
+				<textbox id="torrent-label" emptytext="New label" tooltiptext="New torrent label." flex="1"/>
+			</hbox>
+		</deck>
+	</vbox>
+</dialog>
