@@ -5,4 +5,5 @@ Fixed bugs:
 
 To do (need help):
 - HttpRequest.sendGetRequestInternal: ex: Not Connected
+
 More info on possible fix: https://bugzilla.mozilla.org/show_bug.cgi?id=845514#c5
