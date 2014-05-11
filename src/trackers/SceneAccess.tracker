@@ -73,6 +73,14 @@
 			</extract>
 		</linepatterns>
 		<linematched>
+			<var name="scene">
+				<string value="true"/>
+			</var>
+			<if srcvar="category" regex="^Non\-Scene">
+				<var name="scene">
+					<string value="false"/>
+				</var>
+			</if>
 			<var name="torrentUrl">
 				<string value="http://"/>
 				<var name="$baseUrl"/>
