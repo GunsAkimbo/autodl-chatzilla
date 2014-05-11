@@ -1,9 +1,6 @@
+Goal of this repository is to make the autodl-plugin work with ChatZilla 0.9.90 and FireFox v19 and above
+
 Fixed bugs:
 
-- "XML is not defined @ ...\Settings.js"
-
-
-To do (need help):
-- HttpRequest.sendGetRequestInternal: ex: Not Connected
-
-More info on possible fix: https://bugzilla.mozilla.org/show_bug.cgi?id=845514#c5
+- Settings.js: "XML is not defined @ ...\Settings.js"
+- HttpRequest.js: "HttpRequest.sendGetRequestInternal: ex: Not Connected"
