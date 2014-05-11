@@ -240,41 +240,66 @@ function()
 		var isSecure = protocol === "https";
 
 		this.dmessage(5, "Trying to connect: url: " + this.url);
-		if (this.connection.connect(hostname, port, { isSecure: isSecure }))
-		{
-			this.dmessage(5, "Now connected: url: " + this.url);
-
-			var msg =
-			this.method + " " + path + " HTTP/1.1\r\n" +
-			"Host: " + hostname + "\r\n" +
-			"User-Agent: " + this.userAgent + "\r\n" +
-			"Accept: */*\r\n" +
-			"Accept-Encoding: gzip\r\n" +
-			"Connection: close\r\n";
-			for (var prop in this.httpHeaders)
-				msg += prop + ": " + this.httpHeaders[prop] + "\r\n";
-			if (this.methodData !== undefined)
-				msg += "Content-Length: " + this.methodData.length + "\r\n";
-			msg += "\r\n";
-
-			if (this.methodData !== undefined)
-				msg += this.methodData + "\r\n";
-
-			this.dmessage(5, "Sending HTTP headers:\n" + msg.substr(0, 700), MT_STATUS);
-			this.connection.sendData(msg);
-			this.connection.startAsyncRead(this);
-		}
-		else
-		{
-			this.dmessage(5, "Failed to connect: url: " + this.url);
-			this.retry("Could not connect")
-		}
+        this.connection.connect(hostname,port, { isSecure: isSecure },this);
 	}
 	catch (ex)
 	{
 		this.fatal("HttpRequest.sendGetRequestInternal: ex: " + formatException(ex));
 	}
+    return true;
 }
+HttpRequest.prototype.onSocketConnection =
+function(hostname, port, config, exception)
+{
+    if (exception)
+    {
+        this.dmessage(5, "Failed to connect: url: " + this.url);
+        this.retry("Could not connect")
+    }
+    else
+    {
+        this.dmessage(5, "Now connected: url: " + this.url);
+
+        var ary = this.url.match(/^(\w+):\/\/([^\/]+)(\/.*)/);
+		if (!ary)
+			return this.fatal("Invalid url: '" + this.url + "'");
+		var protocol = ary[1];
+		var hostname = ary[2];
+		var path = ary[3];
+		var port = protocol === "https" ? "443" : "80";
+		ary = hostname.match(/([^:]+):(.+)/);
+		if (ary)
+		{
+			hostname = ary[1];
+			if (ary[2].length !== 0)
+				port = ary[2];
+		}
+
+        
+        var msg =
+        this.method + " " + path + " HTTP/1.1\r\n" +
+        "Host: " + hostname + "\r\n" +
+        "User-Agent: " + this.userAgent + "\r\n" +
+        "Accept: */*\r\n" +
+        "Accept-Encoding: gzip\r\n" +
+        "Connection: close\r\n";
+        this.dmessage(5, "Past header msg");
+        for (var prop in this.httpHeaders)
+            msg += prop + ": " + this.httpHeaders[prop] + "\r\n";
+        if (this.methodData !== undefined)
+            msg += "Content-Length: " + this.methodData.length + "\r\n";
+        msg += "\r\n";
+        
+        if (this.methodData !== undefined)
+            msg += this.methodData + "\r\n";
+        
+        this.dmessage(5, "Sending HTTP headers:\n" + msg.substr(0, 700), MT_STATUS);
+        this.connection.sendData(msg);
+        this.connection.startAsyncRead(this);
+        
+    }
+}
+
 
 // Called when there's data to read
 HttpRequest.prototype.onStreamDataAvailable =
