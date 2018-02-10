@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -39,7 +39,7 @@
 			network="P2P-NET"
 			serverNames="irc.p2p-network.net,irc.p2p-irc.net"
 			channelNames="#acehd"
-			announcerNames="Ace-HD"
+			announcerNames="AceHD-BOT"
 			/>
 	</servers>
 

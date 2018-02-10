@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -27,7 +27,8 @@
 	type="hdme"
 	shortName="HDME"
 	longName="HDME.eu"
-	siteName="hdme.eu">
+	siteName="hdme.eu"
+	follow302links="true">
 
 	<settings>
 		<description text="Go to http://hdme.eu/getrss.php to get the RSS feed link. Paste it (Ctrl+V) into the text box below to automatically extract passkey."/>
@@ -71,7 +72,7 @@
 			<extract>
 				<regex value="^Size:\s*(.*)"/>
 				<vars>
-					<var name="torrentSize"/>
+					<var name="$torrentSize"/>
 				</vars>
 			</extract>
 			<extract>
@@ -98,11 +99,11 @@
 			<var name="torrentUrl">
 				<string value="http://"/>
 				<var name="$baseUrl"/>
-				<string value="rssdown.php/"/>
+				<string value="rssdown.php?id="/>
 				<var name="$torrentId"/>
-				<string value="/"/>
+				<string value="&amp;passkey="/>
 				<var name="passkey"/>
-				<string value="/"/>
+				<string value="&amp;name="/>
 				<varenc name="torrentName"/>
 				<string value=".torrent"/>
 			</var>

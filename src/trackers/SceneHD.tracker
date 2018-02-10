@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -37,28 +37,34 @@
 
 	<servers>
 		<server
-			network="P2P-NET"
-			serverNames="irc.p2p-network.net,irc.p2p-irc.net"
-			channelNames="#scenehd.announce"
-			announcerNames="fireBot"
+			network="SceneHD"
+			serverNames="irc.scenehd.eu"
+			channelNames="#scenehd,#announce"
+			announcerNames="SceneHD"
 			/>
 	</servers>
 
 	<parseinfo>
 		<linepatterns>
 			<extract>
-				<!--[NEW] 24.S08E20.EXTENDED.720p.BluRay.X264-WASABi [TV/720] https://scenehd.org/details.php?id=37403 by: anonymous-->
-				<regex value="^\[NEW](.*)\[([^\]]+)] https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+) by:(.*)"/>
+				<!--[NEW] 24.S08E20.EXTENDED.720p.BluRay.X264-WASABi [TV/720] https://scenehd.org/details.php?id=37403-->
+				<regex value="^\[NEW](.*)\[([^\]]+)] https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)"/>
 				<vars>
 					<var name="torrentName"/>
 					<var name="category"/>
 					<var name="$baseUrl"/>
 					<var name="$torrentId"/>
-					<var name="uploader"/>
 				</vars>
 			</extract>
 		</linepatterns>
 		<linematched>
+			<var name="freeleech">
+				<string value="false"/>
+			</var>
+
+			<setregex srcvar="torrentName" regex="\.1x01|S01E01|SceneHD$" varName="freeleech" newValue="true"/>
+			<setregex srcvar="category" regex="Bluray\/Complete" varName="freeleech" newValue="true"/>
+
 			<var name="torrentUrl">
 				<string value="http://"/>
 				<var name="$baseUrl"/>

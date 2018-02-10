@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -31,14 +31,16 @@
 
 	<settings>
 		<gazelle_description/>
-		<gazelle_authkey/>
+		<gazelle_authkey
+			pasteGroup="authkey,torrent_pass"
+			pasteRegex="id=\d+&amp;(?:authkey=)?([\da-zA-Z]{32})"/>
 		<gazelle_torrent_pass/>
 	</settings>
 
 	<servers>
 		<server
-			network="omgwtfhax"
-			serverNames="irc.omgwtfhax.net"
+			network="BroadcasTheNet"
+			serverNames="irc.broadcasthe.net"
 			channelNames="#BTN-Announce"
 			announcerNames="Barney"
 			/>
@@ -61,21 +63,20 @@
 			<!--[ 2010 ] [ Episode ] [ AVI | XViD | HDTV | Scene | FastTorrent ] [ Uploader: Satan ] [ Pretime: 1 minute and 30 seconds ]-->
 			<!--[ https://XXXXXXXXX/torrents.php?id=7366 / https://XXXXXXXXX/torrents.php?action=download&id=9088 ]-->
 			<extract>
-				<regex value="^NOW BROADCASTING!\s*(?:\[(.*)\])?\s*$"/>
+				<regex value="^NOW BROADCASTING! \[(.*)\]"/>
 				<vars>
 					<var name="torrentName"/>
 				</vars>
 			</extract>
 			<extract>
-				<regex value="^\[ Title:([^\]]*)\]\s*\[ Series:([^\]]*)\]\s*$"/>
+				<regex value="^\[ Title: (.*) \] \[ Series: (.*) \]"/>
 				<vars>
 					<var name="$title"/>
-					<!-- Their series name field is buggy so don't use it anymore -->
-					<var name="$name1"/>
+					<var name="name1"/>
 				</vars>
 			</extract>
 			<extract>
-				<regex value="^(?:\[\s*(?:(\d+)[^\]]*)?\s*\]\s*)?\[ ([^\]]*)\] \[([^\]]*)\]\s*\[ Uploader: ([^\]]*)\]\s*(?:\[\s*Pretime:([^\]]*)\])?\s*$"/>
+				<regex value="^(?:\[ (\d+) \] )?\[ (.*) \] \[ (.*) \] \[ Uploader: (.*?) \](?: \[ Pretime: (.*) \])?"/>
 				<vars>
 					<var name="year"/>
 					<var name="category"/>
@@ -85,10 +86,9 @@
 				</vars>
 			</extract>
 			<extract>
-				<regex value="^\[.* / .*https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)\s*\]\s*$"/>
+				<regex value="^\[ .* / (https?://.*id=\d+) \]"/>
 				<vars>
 					<var name="$baseUrl"/>
-					<var name="$torrentId"/>
 				</vars>
 			</extract>
 		</multilinepatterns>
@@ -97,27 +97,38 @@
 				<string value="false"/>
 			</var>
 
-			<if srcvar="$title" regex="^AutoFillFail$">
-				<var name="$title">
+			<if srcvar="name1" regex="^AutoFill">
+				<var name="name1">
 					<string value=""/>
 				</var>
 			</if>
-			<if srcvar="$name1" regex="^AutoFillFail$">
-				<var name="$name1">
-					<string value=""/>
-				</var>
-			</if>
+
+			<extract srcvar="$title" optional="true">
+				<regex value="Season 0?(\d+)"/>
+				<vars>
+					<var name="season"/>
+				</vars>
+			</extract>
+
+			<extract srcvar="$title" optional="true">
+				<regex value="S0?(\d+)E0?(\d+)"/>
+				<vars>
+					<var name="season"/>
+					<var name="episode"/>
+				</vars>
+			</extract>
 
 			<varreplace name="tags" srcvar="tags" regex="[\|]" replace=", "/>
+			<setregex srcvar="tags" regex="Scene" varName="scene" newValue="true"/>
 
 			<extracttags srcvar="tags" split=",">
-				<setvarif varName="scene" value="Scene" newValue="true"/>
+				<setvarif varName="origin" regex="^(?:None|Scene|P2P|Internal|User|Mixed)$"/>
 
-				<setvarif varName="resolution" regex="^(?:SD|Standard?Def.*|480i|480p|576p|720p|810p|1080p|1080i|PD|Portable Device)$"/>
-				<setvarif varName="source" regex="^(?:R5|DVDScr|BRRip|CAM|TS|TELESYNC|TC|TELECINE|DSR|PDTV|HDTV|DVDRip|BDRip|DVDR|DVD|BluRay|Blu\-Ray|WEB\-DL|WEB|TVRip|HDDVD|HD\-DVD)$"/>
-				<setvarif varName="encoder" regex="^(?:XviD|DivX|x264|h\.264|h264|mpeg2|VC\-1|VC1|WMV)$"/>
+				<setvarif varName="resolution" regex="^(?:SD|Standard?Def.*|480i|480p|576p|720p|810p|1080p|1080i|2160p|PD|Portable Device)$"/>
+				<setvarif varName="source" regex="^(?:R5|DVDScr|BRRip|CAM|TS|TELESYNC|TC|TELECINE|DSR|PDTV|HDTV|DVDRip|BDRip|DVDR|DVD|BluRay|Blu\-Ray|WEBRip|WEB\-DL|WEB|TVRip|HDDVD|HD\-DVD)$"/>
+				<setvarif varName="encoder" regex="^(?:XviD|DivX|x264|x264\-Hi10p|h\.264|h264|mpeg2|VC\-1|VC1|WMV)$"/>
 
-				<setvarif varName="$container" regex="^(?:AVI|MKV|VOB|MPEG|MP4|ISO|WMV|TS|M4V)$"/>
+				<setvarif varName="container" regex="^(?:AVI|MKV|VOB|MPEG|MP4|ISO|WMV|TS|M4V|M2TS)$"/>
 
 				<!--Ignored-->
 				<regex value=""/>
@@ -145,10 +156,7 @@
 			</if>
 
 			<var name="torrentUrl">
-				<string value="http://"/>
 				<var name="$baseUrl"/>
-				<string value="torrents.php?action=download&amp;id="/>
-				<var name="$torrentId"/>
 				<string value="&amp;authkey="/>
 				<var name="authkey"/>
 				<string value="&amp;torrent_pass="/>

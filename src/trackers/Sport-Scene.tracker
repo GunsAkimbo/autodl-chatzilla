@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -30,8 +30,8 @@
 	siteName="www.sport-scene.net">
 
 	<settings>
-		<cookie_description/>
-		<cookie/>
+		<description text="Go to http://sport-scene.net/getrss.php and extract passkey."/>
+		<passkey tooltiptext="The passkey in your sportscene RSS feed link."/>
 	</settings>
 
 	<servers>
@@ -50,7 +50,7 @@
 				<regex value="^Sport-Scene.net.*Torrents:\s*\((.*)Size:\s*\((.*)\)\s*Link:\s*\(\s*https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)"/>
 				<vars>
 					<var name="torrentName"/>
-					<var name="torrentSize"/>
+					<var name="$torrentSize"/>
 					<var name="$baseUrl"/>
 					<var name="$torrentId"/>
 				</vars>
@@ -60,15 +60,14 @@
 			<var name="torrentUrl">
 				<string value="http://"/>
 				<var name="$baseUrl"/>
-				<string value="download.php/"/>
+				<string value="rssdownload.php/"/>
 				<var name="$torrentId"/>
+				<string value="/"/>
+				<var name="passkey"/>
 				<string value="/"/>
 				<varenc name="torrentName"/>
 				<string value=".torrent"/>
 			</var>
-			<http name="cookie">
-				<var name="cookie"/>
-			</http>
 		</linematched>
 		<ignore>
 			<regex value="^Sport-Scene.net.*Torrents:" expected="false"/>
