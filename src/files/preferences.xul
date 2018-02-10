@@ -53,6 +53,7 @@
 			<tab label="FTP" accesskey="F"/>
 			<tab label="Scripts" accesskey="S"/>
 			<tab label="Programs" accesskey="P"/>
+			<tab label="Announce" accesskey="a"/>
 			<tab label="Advanced" accesskey="d"/>
 		</tabs>
 		<tabpanels flex="1">
@@ -296,7 +297,45 @@
 					</rows>
 				</grid>
 			</tabpanel>
+			
+			<!-- Announce tab -->
+			<tabpanel>
+				<grid flex="1">
+					<columns>
+						<column/>
+						<column flex="1"/>
+						<column/>
+					</columns>
 
+					<rows>
+						<row>
+							<label control="path-sonarr" value="Sonarr API endpoint" accesskey="s"/>
+							<textbox id="path-sonarr" emptytext="http://localhost:8989/api" tooltiptext="Base path for Sonarr's API"/>
+						</row>
+						<row>
+							<label control="apikey-sonarr" value="Sonarr API key" accesskey="a"/>
+							<textbox id="apikey-sonarr" emptytext="Settings -> General in Sonarr" tooltiptext="API key for Sonarr"/>
+						</row>
+						<row>
+							<label control="path-radarr" value="Radarr API endpoint" accesskey="r"/>
+							<textbox id="path-radarr" emptytext="http://localhost:7878/api" tooltiptext="Base path for Radarr's API"/>
+						</row>
+						<row>
+							<label control="apikey-radarr" value="Radarr API key" accesskey="d"/>
+							<textbox id="apikey-radarr" emptytext="Settings -> General in Radarr" tooltiptext="API key for Radarr"/>
+						</row>
+						<row>
+							<label control="hdtv-delay" value="HDTV Delay" accesskey="h"/>
+							<textbox id="hdtv-delay" emptytext="Seconds to delay 480p tvrips before announcing" tooltiptext="Blank for no delay"/>
+						</row>
+						<row>
+							<label control="web-delay" value="Web Delay" accesskey="w"/>
+							<textbox id="web-delay" emptytext="Seconds to delay 480p/720p web releases before announcing" tooltiptext="Blank for no delay"/>
+						</row>
+					</rows>
+				</grid>
+			</tabpanel>
+			
 			<!-- Advanced tab -->
 			<tabpanel>
 				<grid flex="1">
