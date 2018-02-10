@@ -679,6 +679,8 @@ function(doc, uploadMethod)
 	saveValue("tool-args", uploadMethod.tool.args, defaults.tool.args);
 	saveValue("dyndir-basedir", uploadMethod.dynamicDir.basedir, defaults.dynamicDir.basedir);
 	saveValue("dyndir-dyndir", uploadMethod.dynamicDir.dyndir, defaults.dynamicDir.dyndir);
+	saveValue("sonarr-alt-rn", uploadMethod.sonarr.altRn, defaults.sonarr.altRn);
+	saveValue("radarr-alt-rn", uploadMethod.radarr.altRn, defaults.radarr.altRn);
 
 	return modified ? uploadMethodElem : null;
 }
@@ -884,6 +886,9 @@ function(elem, uploadMethod)
 	uploadMethod.tool.args = readTextNode(elem, "tool-args", defaults.tool.args);
 	uploadMethod.dynamicDir.basedir = readTextNode(elem, "dyndir-basedir", defaults.dynamicDir.basedir);
 	uploadMethod.dynamicDir.dyndir = readTextNode(elem, "dyndir-dyndir", defaults.dynamicDir.dyndir);
+	uploadMethod.sonarr.altRn = readTextNodeBoolean(elem, "sonarr-alt-rn", defaults.overrideGlobal);
+	uploadMethod.radarr.altRn = readTextNodeBoolean(elem, "radarr-alt-rn", defaults.overrideGlobal);
+	
 }
 
 // <= v2.0.1

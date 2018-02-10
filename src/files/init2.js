@@ -520,6 +520,16 @@ function createUploadMethod()
 			basedir: "",
 			dyndir: "",
 		},
+		
+		sonarr:
+		{
+			altRn: false,
+		},
+		
+		radarr:
+		{
+			altRn: false,
+		},
 	};
 
 	return uploadMethod

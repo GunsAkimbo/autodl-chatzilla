@@ -33,6 +33,8 @@ UploadMethod.prototype.idToValue =
 	"um-menuitem-ftp":			UPLOAD_FTP,
 	"um-menuitem-tool":			UPLOAD_TOOL,
 	"um-menuitem-dyndir":		UPLOAD_UTORRENT_DIR,
+	"um-sonarr":				UPLOAD_SONARR,
+	"um-radarr":				UPLOAD_RADARR,
 };
 
 UploadMethod.prototype.onDlgLoad =
@@ -59,6 +61,8 @@ function(uploadMethod, useOverrideGlobalCheckbox)
 	setElem.setValue("um-tool-args", "tool", "args");
 	setElem.setValue("um-dyndir-basedir", "dynamicDir", "basedir");
 	setElem.setValue("um-dyndir-dyndir", "dynamicDir", "dyndir");
+	setElem.setCheck("sonarr-alt-rn", "sonarr", "altRn");
+	setElem.setCheck("radarr-alt-rn", "radarr", "altRn");
 
 	if (useOverrideGlobalCheckbox)
 		setElem.setCheck("um-override-global", "overrideGlobal");
@@ -82,6 +86,9 @@ function(uploadMethod, useOverrideGlobalCheckbox)
 	uploadMethod.tool.args = document.getElementById("um-tool-args").value;
 	uploadMethod.dynamicDir.basedir = document.getElementById("um-dyndir-basedir").value;
 	uploadMethod.dynamicDir.dyndir = document.getElementById("um-dyndir-dyndir").value;
+	uploadMethod.sonarr.altRn = document.getElementById("sonarr-alt-rn").checked;
+	uploadMethod.radarr.altRn = document.getElementById("radarr-alt-rn").checked;
+	
 	if (useOverrideGlobalCheckbox)
 		uploadMethod.overrideGlobal = !!document.getElementById("um-override-global").checked;
 

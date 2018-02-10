@@ -104,6 +104,8 @@
 								<menuitem label="FTP Upload" id="um-menuitem-ftp"/>
 								<menuitem label="Run Program" id="um-menuitem-tool"/>
 								<menuitem label="Save to Dynamic Folder" id="um-menuitem-dyndir"/>
+								<menuitem label="Announce to Sonarr" id="um-sonarr"/>
+								<menuitem label="Announce to Radarr" id="um-radarr"/>
 							</menupopup>
 						</menulist>
 					</hbox>
@@ -176,6 +178,32 @@
 								<row>
 									<label control="um-dyndir-dyndir" value="Dynamic Folder Name" accesskey="n"/>
 									<textbox id="um-dyndir-dyndir" emptytext="Name of dynamic folder, eg. $(month)$(day)" tooltiptext="The name of the folder where the downloads will be saved. If you want it to be current month and day, then use $(month)$(day)"/>
+								</row>
+							</rows>
+						</grid>
+						<!-- Sonarr Announce settings -->
+						<grid>
+							<columns>
+								<column/>
+								<column flex="1"/>
+								<column/>
+							</columns>
+							<rows>
+								<row>
+									<checkbox id="sonarr-alt-rn" label="Send scene style release name to Sonarr" accesskey="r" tooltiptext="Restructures the release name to be in scene style, for trackers that don't follow it."/>
+								</row>
+							</rows>
+						</grid>
+						<!-- Radarr Announce settings -->
+						<grid>
+							<columns>
+								<column/>
+								<column flex="1"/>
+								<column/>
+							</columns>
+							<rows>
+								<row>
+									<checkbox id="radarr-alt-rn" label="Send scene style release name to Radarr" accesskey="r" tooltiptext="Restructures the release name to be in scene style, for trackers that don't follow it."/>
 								</row>
 							</rows>
 						</grid>
