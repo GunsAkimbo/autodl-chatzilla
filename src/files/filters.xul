@@ -271,7 +271,7 @@
 									<menuitem label="Run Program" id="um-menuitem-tool"/>
 									<menuitem label="Save to Dynamic Folder" id="um-menuitem-dyndir"/>
 									<menuitem label="Announce to Sonarr" id="um-sonarr"/>
-									<menuitem label="Announce to Radarr" id="um-sonarr"/>
+									<menuitem label="Announce to Radarr" id="um-radarr"/>
 								</menupopup>
 							</menulist>
 						</hbox>

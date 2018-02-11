@@ -68,7 +68,16 @@ function(ti, filename, forceHttps)
 	filedownload.filename = convertToValidPathName(ti.tracker.type + "-" + filename);
 	filedownload.startTime = newDate();
 	filedownload.downloadUrl = forceHttps ? filedownload.ti.torrentSslUrl : filedownload.ti.torrentUrl;
-	filedownload.sendGetRequest(filedownload.downloadUrl, ti.httpHeaders, this.getHandler_onTorrentDownloaded());
+	
+	if (filedownload.ti.uploadMethod.type == UPLOAD_SONARR || filedownload.ti.uploadMethod.type == UPLOAD_RADARR)
+	{
+		this.onTorrentUploadWait(filedownload);
+	}
+	else
+	{
+		message(3, "Downloading torrent for some reason", MT_STATUS);
+		filedownload.sendGetRequest(filedownload.downloadUrl, ti.httpHeaders, this.getHandler_onTorrentDownloaded());
+	}
 }
 
 plugin.getHandler_onTorrentDownloaded =
@@ -184,6 +193,8 @@ function(filedownload)
 	case UPLOAD_FTP:			return this.sendTorrentFileFtp(filedownload); break;
 	case UPLOAD_TOOL:			return this.runProgram(filedownload); break;
 	case UPLOAD_UTORRENT_DIR:	return this.runUtorrentDir(filedownload); break;
+	case UPLOAD_SONARR:			return this.announceSonarr(filedownload,false);break;
+	case UPLOAD_RADARR:			return this.announceSonarr(filedownload,true);break;
 	default:					message(0, "Upload type not implemented, type: " + filedownload.ti.uploadMethod.type); break;
 	}
 }
@@ -439,6 +450,138 @@ function(errorMessage, commandResults, filedownload)
 		filedownload.ti.torrentDataPath = settings.dir_active_download;
 
 	this.onTorrentFileUploaded(filedownload, "Uploaded torrent (webui)");
+}
+
+//Send post requests for Sonarr/Radarr
+plugin.post = 
+function(path, apikey, params,)
+{
+	var json_params = JSON.stringify(params);
+	var this_ = this;
+	var request = new XMLHttpRequest();
+	request.onreadystatechange= function () {
+		if (request.readyState==4 && request.status == 200) {
+			try
+			{
+				this_.onPostResponse(JSON.parse(request.responseText));
+			}
+			catch (ex)
+			{
+				message(0, "JSON parse error: " + formatException(ex), MT_ERROR);
+			}
+
+		}
+	}
+	request.open("POST", path, true);
+	request.setRequestHeader("X-Api-Key", apikey);
+	request.setRequestHeader("Content-Type","application/json");
+	request.send(json_params);
+}
+
+plugin.onPostResponse = 
+function(response)
+{
+	if (response.approved)
+	{
+		message(3, "APPROVED: " + response.title ,MT_STATUS);
+	}
+	else
+	{
+		message(4, "DENIED: " + response.toSource(), MT_STATUS);
+	}
+}
+
+//Try to build a scene-esque release name for trackers that don't utilize scene naming
+plugin.sceneStringBuilder =
+function(filedownload)
+{	
+	var alt_release_name = ""
+	if(filedownload.ti.name1)
+	{
+		alt_release_name = filedownload.ti.name1.replace(/ /g,".");
+	}
+	if(filedownload.ti.year)
+	{
+		alt_release_name = alt_release_name + "." + filedownload.ti.year;
+	}
+	if(filedownload.ti.season)
+	{
+		alt_release_name = alt_release_name + ".S" + filedownload.ti.season;
+	}
+	if (filedownload.ti.episode)
+	{
+		alt_release_name = alt_release_name + ".E" + filedownload.ti.episode;
+	}
+	if (filedownload.ti.resolution)
+	{
+		alt_release_name = alt_release_name + "." +  filedownload.ti.resolution;
+	}
+	if (filedownload.ti.source)
+	{
+		alt_release_name = alt_release_name + "." + filedownload.ti.source;
+	}
+	if (filedownload.ti.encoder)
+	{
+		alt_release_name = alt_release_name + "." + filedownload.ti.encoder;
+	}
+	return alt_release_name;
+}
+
+plugin.announceSonarr =
+function(filedownload, isRadarr)
+{
+	if (!this.downloadHistory.canDownload(filedownload.ti))
+	{
+		this.releaseAlreadyDownloaded(filedownload.ti);
+		return;
+	}
+	
+	if (filedownload.ti.uploadMethod.sonarr.altRn && !isRadarr)
+	{
+		release_name = this.sceneStringBuilder(filedownload);
+		message(3, release_name, MT_STATUS);
+	}
+	else if (filedownload.ti.uploadMethod.radarr.altRn && isRadarr)
+	{
+		release_name = this.sceneStringBuilder(filedownload);
+		message(3, release_name, MT_STATUS);
+	}
+	else
+	{
+		release_name = filedownload.ti.torrentName;
+	}
+	
+	if(isRadarr)
+	{
+		var url = plugin.options.announce.radarrPath + "/release/push";
+	}
+	else
+	{
+		var url = plugin.options.announce.sonarrPath + "/release/push";
+	}
+
+	if(isRadarr)
+	{
+		var apikey = plugin.options.announce.radarrApiKey;
+	}
+	else
+	{
+		var apikey = plugin.options.announce.sonarrApiKey;
+	}
+
+
+	
+	var params =
+	{	
+		"title"			: release_name,
+		'downloadUrl'	: filedownload.downloadUrl,
+		'protocol'		: 'torrent',
+		'publishDate'	: filedownload.startTime.toISOString(),
+		'indexer'		: filedownload.ti.tracker.shortName,
+	}
+	
+	this.post(url,apikey,params);
+
 }
 
 function saveFileInternal(directory, filename, data)
