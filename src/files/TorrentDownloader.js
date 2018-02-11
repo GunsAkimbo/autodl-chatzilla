@@ -56,8 +56,6 @@ function(ti, filename, forceHttps)
 		return;
 	}
 
-	message(3, "Matched " + this.getTorrentInfoString(ti), MT_STATUS);
-
 	var filedownload = new HttpRequest();
 	if (ti.tracker.follow302)
 		filedownload.setFollowNewLocation();
@@ -163,6 +161,7 @@ function(filedownload)
 	var uploadDelaySecs = readTrackerOption(filedownload.ti.tracker, "uploadDelaySecs");
 	if (!uploadDelaySecs)
 	{
+		message(4, "Matched " + this.getTorrentInfoString(filedownload.ti), MT_STATUS);
 		this.onTorrentFileDownloaded(filedownload);
 	}
 	else
@@ -172,11 +171,17 @@ function(filedownload)
 			torrentName: filedownload.ti.torrentName,
 			tracker: filedownload.ti.tracker,
 		});
-		message(3, msg, MT_STATUS);
+		message(4, msg, MT_STATUS);
 
 		var this_ = this;
 		setTimeout(function()
 		{
+			if (!this_.downloadHistory.canDownload(filedownload.ti))
+			{
+				this_.releaseAlreadyDownloaded(filedownload.ti);
+				return;
+			}
+			message(4, "Matched " + this_.getTorrentInfoString(filedownload.ti), MT_STATUS);
 			this_.onTorrentFileDownloaded(filedownload);
 		}, uploadDelaySecs * 1000);
 	}
@@ -218,7 +223,14 @@ function(ti, torrentPathName, info_hash)
 plugin.addDownload =
 function(filedownload)
 {
-	this.downloadHistory.addDownload(filedownload.ti, filedownload.downloadUrl);
+	try
+	{
+		this.downloadHistory.addDownload(filedownload.ti, filedownload.downloadUrl);
+	}
+	catch (ex)
+	{
+		message(0,ex,MT_ERROR);
+	}
 }
 
 plugin.runUtorrentDir =
@@ -454,7 +466,7 @@ function(errorMessage, commandResults, filedownload)
 
 //Send post requests for Sonarr/Radarr
 plugin.post = 
-function(path, apikey, params,)
+function(path, apikey, params,filedownload)
 {
 	var json_params = JSON.stringify(params);
 	var this_ = this;
@@ -463,7 +475,7 @@ function(path, apikey, params,)
 		if (request.readyState==4 && request.status == 200) {
 			try
 			{
-				this_.onPostResponse(JSON.parse(request.responseText));
+				this_.onPostResponse(JSON.parse(request.responseText),filedownload);
 			}
 			catch (ex)
 			{
@@ -479,15 +491,16 @@ function(path, apikey, params,)
 }
 
 plugin.onPostResponse = 
-function(response)
+function(response, filedownload)
 {
+	this.addDownload(filedownload);
 	if (response.approved)
 	{
-		message(3, "APPROVED: " + response.title ,MT_STATUS);
+		this.onTorrentFileUploaded(filedownload, "APPROVED");
 	}
 	else
 	{
-		message(4, "DENIED: " + response.toSource(), MT_STATUS);
+		this.onTorrentFileUploaded(filedownload, "DENIED");
 	}
 }
 
@@ -569,7 +582,6 @@ function(filedownload, isRadarr)
 		var apikey = plugin.options.announce.sonarrApiKey;
 	}
 
-
 	
 	var params =
 	{	
@@ -580,7 +592,27 @@ function(filedownload, isRadarr)
 		'indexer'		: filedownload.ti.tracker.shortName,
 	}
 	
-	this.post(url,apikey,params);
+	message(3,filedownload.ti.torrentName + " : " + plugin.options.announce.hdtvDelay + " : " + filedownload.ti.source + " : " + filedownload.ti.resolution, MT_STATUS)
+	var this_ = this;
+	if (plugin.options.announce.hdtvDelay && filedownload.ti.source.toLowerCase().indexOf("tv") != -1 && filedownload.ti.resolution != "720p")
+	{
+		message(3, "Delaying HDTV release: " + release_name, MT_STATUS)
+		setTimeout(function()
+		{
+			this_.post(url,apikey,params,filedownload);
+		}, plugin.options.announce.hdtvDelay * 1000);
+		return;
+	}
+	else if (plugin.options.announce.webDelay && filedownload.ti.source.toLowerCase().indexOf("web") != -1 && filedownload.ti.resolution != "1080p")
+	{
+		message(3, "Delaying WEB release: " + release_name, MT_STATUS)
+		setTimeout(function()
+		{
+			this_.post(url,apikey,params,filedownload);
+		}, plugin.options.announce.webDelay * 1000);
+		return;
+	}
+	this.post(url,apikey,params,filedownload);
 
 }
 
@@ -633,7 +665,15 @@ function(filedownload, message)
 	this.displayTotalTime(filedownload, newDate(), message);
 
 	var scriptExecOptions = this.options.scriptExecOptions;
-	var hash = toHexString(filedownload.info_hash);
+	if (filedownload.info_hash)
+	{
+		var hash = toHexString(filedownload.info_hash);
+	}
+	else
+	{
+		var hash = null;
+	}
+	
 	if (scriptExecOptions.uploaded.scriptName)
 	{
 		var scriptExec = new ScriptExec(scriptExecOptions.uploaded.scriptName, hash, filedownload.ti,
