@@ -493,7 +493,6 @@ function(path, apikey, params,filedownload)
 plugin.onPostResponse = 
 function(response, filedownload)
 {
-	this.addDownload(filedownload);
 	if (response.approved)
 	{
 		this.onTorrentFileUploaded(filedownload, "APPROVED");
@@ -552,12 +551,12 @@ function(filedownload, isRadarr)
 	if (filedownload.ti.uploadMethod.sonarr.altRn && !isRadarr)
 	{
 		release_name = this.sceneStringBuilder(filedownload);
-		message(3, release_name, MT_STATUS);
+		message(4, release_name, MT_STATUS);
 	}
 	else if (filedownload.ti.uploadMethod.radarr.altRn && isRadarr)
 	{
 		release_name = this.sceneStringBuilder(filedownload);
-		message(3, release_name, MT_STATUS);
+		message(4, release_name, MT_STATUS);
 	}
 	else
 	{
@@ -592,11 +591,12 @@ function(filedownload, isRadarr)
 		'indexer'		: filedownload.ti.tracker.shortName,
 	}
 	
-	message(3,filedownload.ti.torrentName + " : " + plugin.options.announce.hdtvDelay + " : " + filedownload.ti.source + " : " + filedownload.ti.resolution, MT_STATUS)
+	//message(3,filedownload.ti.torrentName + " : " + plugin.options.announce.hdtvDelay + " : " + filedownload.ti.source + " : " + filedownload.ti.resolution, MT_STATUS)
 	var this_ = this;
-	if (plugin.options.announce.hdtvDelay && filedownload.ti.source.toLowerCase().indexOf("tv") != -1 && filedownload.ti.resolution != "720p")
+	if (plugin.options.announce.hdtvDelay && filedownload.ti.source.toLowerCase().indexOf("tv") != -1 && (filedownload.ti.resolution != "720p" && filedownload.ti.resolution != "1080p"))
 	{
-		message(3, "Delaying HDTV release: " + release_name, MT_STATUS)
+		this.addDownload(filedownload);
+		message(4, "Delaying HDTV release: " + release_name, MT_STATUS)
 		setTimeout(function()
 		{
 			this_.post(url,apikey,params,filedownload);
@@ -605,7 +605,8 @@ function(filedownload, isRadarr)
 	}
 	else if (plugin.options.announce.webDelay && filedownload.ti.source.toLowerCase().indexOf("web") != -1 && filedownload.ti.resolution != "1080p")
 	{
-		message(3, "Delaying WEB release: " + release_name, MT_STATUS)
+		this.addDownload(filedownload);
+		message(4, "Delaying WEB release: " + release_name, MT_STATUS)
 		setTimeout(function()
 		{
 			this_.post(url,apikey,params,filedownload);
@@ -613,7 +614,7 @@ function(filedownload, isRadarr)
 		return;
 	}
 	this.post(url,apikey,params,filedownload);
-
+	this.addDownload(filedownload);
 }
 
 function saveFileInternal(directory, filename, data)
