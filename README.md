@@ -9,10 +9,10 @@ Fixed bugs:
 Added Features:
 
 - New torrent actions: Announce to Sonarr or Radarr
--- If enabled, matched torrents won't be downloaded by Chatzilla, but forwarded to Sonarr/Radarr and handled from there.
--- Option to recreate a scene-esque release name to send to Sonarr/Radarr. Useful for trackers that don't announce them.
--- Option to delay announces of some content. HDTV releases under 720p, as well as WEB releases under 1080p.
---- The idea here is you can have Sonarr allow lower quality releases, but it won't grab them unless higher quality releases are never announced.
+- If enabled, matched torrents won't be downloaded by Chatzilla, but forwarded to Sonarr/Radarr and handled from there.
+- Option to recreate a scene-esque release name to send to Sonarr/Radarr. Useful for trackers that don't announce them.
+- Option to delay announces of some content. HDTV releases under 720p, as well as WEB releases under 1080p.
+- The idea here is you can have Sonarr allow lower quality releases, but it won't grab them unless higher quality releases are never announced.
 
 Installation:
 
