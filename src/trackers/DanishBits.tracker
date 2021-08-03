@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -31,49 +31,56 @@
 	ignore404="true">
 
 	<settings>
-		<description text="Go to https://danishbits.org/links.php and copy the RSS feed (direct download) link. Paste it (Ctrl+V) into the text box below to automatically extract passkey."/>
-		<passkey/>
+		<gazelle_description/>
+		<gazelle_authkey/>
+		<gazelle_torrent_pass/>
 	</settings>
 
 	<servers>
 		<server
 			network="Danishbits"
 			serverNames="irc.danishbits.org"
-			channelNames="#danishbits.org"
-			announcerNames="DB,MyLameNick,X"
+			channelNames="#DBannounce"
+			announcerNames="DB"
 			/>
 	</servers>
 
 	<parseinfo>
 		<linepatterns>
 			<extract>
-				<!--Nyt Upload ~ Danske Film ~ Hunters.Video.74.Jagt.paa.Berleburg.Nordic.PAL-DVDR ~ 4.25GB ~ https://danishbits.org/details.php?id=94606-->
-				<!--Nyt Upload ~ HD-X264 ~ The.Thin.Red.Line.1998.DKsubs.720p.BluRay.x264-DNG ~ 8.00GB ~ https://danishbits.org/details.php?id=94607-->
-				<!--POWERLEECH ~ HD-X264 ~ The.Thin.Red.Line.1998.DKsubs.720p.BluRay.x264-DNG ~ 8.00GB ~ https://danishbits.org/details.php?id=94607-->
-				<regex value="^(?:Nyt Upload|POWERLEECH|POWERLEEH|FREELEECH) ~([^~]*)~([^~]*)~([^~]*)~\s*https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)"/>
+				<!--NYT UPLOAD ~ TV ~ VFC.51.720p.WEB.h264-VERUM ~ 4.17GB ~ https://danishbits.org/torrents.php?torrentid=612705-->
+				<!--NYT UPLOAD ~ TV (Substance) ~ Freeleech ~ The.Strain.S01.Custom.DKSubs.720p.HDTV.x264-SUBSTANCE ~ 27.79GB ~ https://danishbits.org/torrents.php?torrentid=612706-->
+				<!--NYT UPLOAD ~ HD TV (DanishBits) ~ Freeleech ~ Marseille.s01.NORDiC.1080p.WEBRip.x264-DBRETAiL ~ 16.26GB ~ https://danishbits.org/torrents.php?torrentid=612708-->
+				<!--NYT UPLOAD ~ TV ~ MMA.Victory.FC.51.WEB.h264-OVERTiME ~ 1.44GB ~ https://danishbits.org/torrents.php?torrentid=612711-->
+				<regex value="\s([^~]+?)(?:\s~\s)?(Freeleech)?\s~\s([^~]+?)\s~\s([^~]+?)\s~\s(https?\:\/\/[^\/]+\/)torrents.php\?torrentid=(\d+)"/>
 				<vars>
 					<var name="category"/>
+					<var name="$freeleech"/>
 					<var name="torrentName"/>
-					<var name="torrentSize"/>
+					<var name="$torrentSize"/>
 					<var name="$baseUrl"/>
 					<var name="$torrentId"/>
 				</vars>
 			</extract>
 		</linepatterns>
 		<linematched>
+			<var name="freeleech">
+				<string value="false"/>
+			</var>
+
+			<setregex srcvar="$freeleech" regex="Freeleech" varName="freeleech" newValue="true"/>
+
 			<var name="torrentUrl">
-				<string value="https://"/>
 				<var name="$baseUrl"/>
-				<string value="download.php/"/>
+				<string value="torrents.php?action=download&amp;authkey="/>
+				<var name="authkey"/>
+				<string value="&amp;torrent_pass="/>
+				<var name="torrent_pass"/>
+				<string value="&amp;id="/>
 				<var name="$torrentId"/>
-				<string value="/"/>
-				<varenc name="torrentName"/>
-				<string value=".torrent?passkey="/>
-				<var name="passkey"/>
 			</var>
 		</linematched>
 		<ignore>
-			<regex value="^(?:Nyt Upload|POWERLEECH|POWERLEEH|FREELEECH) " expected="false"/>
 		</ignore>
 	</parseinfo>
 </trackerinfo>

@@ -93,6 +93,14 @@ function initializeOptions(options)
 	setCheck("download-dupe-releases", options.downloadDupeReleases);
 	setValue("path-rar", options.pathToUnrar);
 	setValue("path-utorrent", options.pathToUtorrent);
+	
+	setValue("path-sonarr", options.announce.sonarrPath);
+	setValue("apikey-sonarr", options.announce.sonarrApiKey);
+	setValue("path-radarr", options.announce.radarrPath);
+	setValue("apikey-radarr", options.announce.radarrApiKey);
+	setValue("hdtv-delay", options.announce.hdtvDelay);
+	setValue("web-delay", options.announce.webDelay);
+	
 	updateMenulist.selectItemWithValue(options.updateCheck);
 
 	setValue("webui-user", options.webui.user);
@@ -105,6 +113,7 @@ function initializeOptions(options)
 	setValue("ftp-password", options.ftp.password);
 	setValue("ftp-hostname", options.ftp.hostname);
 	setValue("ftp-port", options.ftp.port);
+	
 
 	uploadMethod.initializeGui(options.uploadMethod);
 	scriptExecDialog.initializeGui(options.scriptExecOptions);
@@ -146,7 +155,14 @@ function saveOptions(options)
 	options.ftp.password = document.getElementById("ftp-password").value;
 	options.ftp.hostname = removeProtocol(document.getElementById("ftp-hostname").value);
 	options.ftp.port = parseInt(document.getElementById("ftp-port").value, 10);
-
+	
+	options.announce.sonarrPath = document.getElementById("path-sonarr").value;
+	options.announce.sonarrApiKey = document.getElementById("apikey-sonarr").value;
+	options.announce.radarrPath = document.getElementById("path-radarr").value;
+	options.announce.radarrApiKey = document.getElementById("apikey-radarr").value;
+	options.announce.hdtvDelay = parseInt(document.getElementById("hdtv-delay").value, 10);
+	options.announce.webDelay = parseInt(document.getElementById("web-delay").value, 10);
+	
 	uploadMethod.saveValues(options.uploadMethod);
 	scriptExecDialog.saveValues(options.scriptExecOptions);
 }

@@ -50,7 +50,9 @@ const UPLOAD_WEBUI = 1;
 const UPLOAD_FTP = 2;
 const UPLOAD_TOOL = 3;
 const UPLOAD_UTORRENT_DIR = 4;
-const UPLOAD_MAX = 4;
+const UPLOAD_SONARR = 5;
+const UPLOAD_RADARR = 6;
+const UPLOAD_MAX = 6;
 
 // Update constants
 const UPDATE_MIN = 0;

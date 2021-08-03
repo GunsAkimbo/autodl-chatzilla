@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -36,9 +36,9 @@
 
 	<servers>
 		<server
-			network="PirateNet"
-			serverNames="irc.pirate-net.info"
-			channelNames="#piratethe.net"
+			network="TiK-T0K"
+			serverNames="irc.tik-t0k.net"
+			channelNames="#piratethe.net,#ptn.announce"
 			announcerNames="PTNBot"
 			/>
 	</servers>
@@ -46,12 +46,12 @@
 	<parseinfo>
 		<linepatterns>
 			<extract>
-				<!--New Torrent Uploaded: -> Name:  Brooklyns.Finest.2009.BDRip.x264.AC3-TBH .:. .:. Quality:  BDRip .:. Size: 1.93 GB .:. URL: https://PTN/details.php?id=50042-->
-				<regex value="^New Torrent Uploaded: -> Name:(.*)\.:\. \.:\. Quality:(.*)\.:\. Size:(.*)\.:\. URL:\s*https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)"/>
+				<!--New in 720P: Rabbit.Without.Ears.II.2009.ROSUB.720p.BluRay.x264-ZoNE with 4.37 GB in 2F @ https://PTN/moviedetails.php?movieid=7036 https://PTN/details.php?id=65157> -->
+				<regex value="^New in (.*)\:(.*) with (.*) in .*\s*https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)"/>
 				<vars>
+					<var name="category"/>
 					<var name="torrentName"/>
-					<var name="$quality"/>
-					<var name="torrentSize"/>
+					<var name="$torrentSize"/>
 					<var name="$baseUrl"/>
 					<var name="$torrentId"/>
 				</vars>
@@ -59,7 +59,7 @@
 		</linepatterns>
 		<linematched>
 			<var name="torrentUrl">
-				<string value="http://"/>
+				<string value="https://"/>
 				<var name="$baseUrl"/>
 				<string value="download.php?torrent="/>
 				<var name="$torrentId"/>
@@ -68,6 +68,34 @@
 			</var>
 		</linematched>
 		<ignore>
+			<regex value="^\[DiAM0ND F0UND\]"/>
+			<regex value="^Welcome To Our"/>
+			<regex value="^User:"/>
+			<regex value="^Sending help to"/>
+			<regex value="^Users.........:"/>
+			<regex value="^Peers.........:"/>
+			<regex value="^Seeders......:"/>
+			<regex value="^Leechers.....:"/>
+			<regex value="^S\/L Ratio.....:"/>
+			<regex value="^No matches found for"/>
+			<regex value="^Error"/>
+			<regex value="^Flood-Control:"/>
+			<regex value="^\[Title\]"/>
+			<regex value="^\[Directed By\]"/>
+			<regex value="^\[Released\]"/>
+			<regex value="^\[Cast\]"/>
+			<regex value="^\[Plot\]"/>
+			<regex value="^\[Poster\]"/>
+			<regex value="^\[Runtime\]"/>
+			<regex value="^\[Link\]"/>
+			<regex value="^Torrent:"/>
+			<regex value="^Link:"/>
+			<regex value="^Size:"/>
+			<regex value="^Found"/>
+			<regex value="^\[PTN B-DAY GiFT\]"/>
+			<regex value="^No matches :"/>
+			<regex value="^New request:"/>
+			<regex value="^\[Announcement\]"/>
 		</ignore>
 	</parseinfo>
 </trackerinfo>

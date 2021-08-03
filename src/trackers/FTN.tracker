@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -27,8 +27,7 @@
 	type="ftn"
 	shortName="FTN"
 	longName="FTN"
-	siteName=""
-	deobfuscate="ftn">
+	siteName="">
 
 	<settings>
 		<cookie_description text="FireFox -> Options -> Privacy -> Show Cookies and find the uid and pass cookies. Example: uid=1234; pass=asdf12347asdf13"/>
@@ -39,7 +38,7 @@
 		<server
 			network="Darknet-IRC.net"
 			serverNames="irc.darknet-irc.net"
-			channelNames="#feedthe.net"
+			channelNames="#feedthe.net.announce"
 			announcerNames="FTN-BOT"
 			/>
 	</servers>

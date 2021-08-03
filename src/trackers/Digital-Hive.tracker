@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -69,7 +69,7 @@
 		</linepatterns>
 		<linematched>
 			<var name="torrentUrl">
-				<string value="http://"/>
+				<string value="https://"/>
 				<var name="$baseUrl"/>
 				<string value="/download.php?id="/>
 				<var name="$torrentId"/>
@@ -82,6 +82,7 @@
 			</http>
 		</linematched>
 		<ignore>
+			<regex value="^!tkb \S+"/>
 		</ignore>
 	</parseinfo>
 </trackerinfo>

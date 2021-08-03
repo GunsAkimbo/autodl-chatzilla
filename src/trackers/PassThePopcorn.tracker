@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -38,19 +38,19 @@
 
 	<servers>
 		<server
-			network="passthepopcorn"
+			network="PassThePopcorn"
 			serverNames="irc.passthepopcorn.me"
-			channelNames="#announce,#announce-ssl"
-			announcerNames="HAL"
+			channelNames="#ptp-announce"
+			announcerNames="Hummingbird"
 			/>
 	</servers>
 
 	<parseinfo>
 		<linepatterns>
 			<extract>
-				<!--Various Artists - Wild Palms [1993] - XviD / DVD / AVI / PAL - https://passthepopcorn.me/torrents.php?id=26971 / https://passthepopcorn.me/torrents.php?action=download&id=48426 - drama, mystery, thriller, sci.fi, future, cult, dystopia,  hologram, scientology, -->
-				<!--Nimród Antal - Predators 2010 720p R5 NEW LiNE XViD - IMAGiNE [2010] - XviD / R5 / MPG / 720p - http://passthepopcorn.me/torrents.php?id=26972 / http://passthepopcorn.me/torrents.php?action=download&id=48429 - action, adventure, sci.fi, thriller-->
-				<regex value="^(.*)-\s+(https?\:\/\/[^\/]+\/).*[&amp;\?]id=(\d+)\s+-\s+(.*)"/>
+				<!--Irene Huss - Nattrond AKA The Night Round [2008] by Anders Engström - XviD / DVD / AVI / 640x352 - http://passthepopcorn.me/torrents.php?id=51627 / http://passthepopcorn.me/torrents.php?action=download&id=97333 - crime, drama, mystery-->
+				<!--Dirty Rotten Scoundrels [1988] by Frank Oz - x264 / Blu-ray / MKV / 720p - http://passthepopcorn.me/torrents.php?id=10735 / http://passthepopcorn.me/torrents.php?action=download&id=97367 - comedy, crime-->
+				<regex value="^(.*)-\s*https?:.*[&amp;\?]id=.*https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)\s*-\s*(.*)"/>
 				<vars>
 					<var name="torrentName"/>
 					<var name="$baseUrl"/>
@@ -65,16 +65,19 @@
 			</var>
 
 			<extract srcvar="torrentName" optional="true">
-				<regex value=".*\s+?-\s+?(.*)$"/>
+				<regex value="by (.*) - (\S+ /.*)"/>
 				<vars>
 					<var name="category"/>
+					<var name="$releaseTags"/>
 				</vars>
 			</extract>
 
-			<varreplace name="$releaseTags" srcvar="category" regex="[\/]" replace=","/>
-
-			<!--Some use dots some use underscores, but replace all with spaces-->
-			<varreplace name="tags" srcvar="tags" regex="[\._]" replace=" "/>
+			<extract srcvar="torrentName" optional="true">
+				<regex value="(\S+ /.*)"/>
+				<vars>
+					<var name="$releaseTags"/>
+				</vars>
+			</extract>
 
 			<extract srcvar="torrentName" optional="true">
 				<regex value="(?:^|[^\d])((?:19|20)\d\d)(?:$|[^\d])"/>
@@ -84,34 +87,31 @@
 			</extract>
 
 			<extract srcvar="torrentName" optional="true">
-				<regex value="^(.+?)\s+-\s+(.+)\s+\[\d{4}]\s+-"/>
+				<regex value="^(.*)\[\d\d\d\d\]"/>
 				<vars>
-					<var name="name2"/>
 					<var name="name1"/>
 				</vars>
 			</extract>
-			<if srcvar="name1" regex="^$">
-				<extract srcvar="torrentName" optional="true">
-					<regex value="^(.+?)\s+-\s+(.+)\s+-"/>
-					<vars>
-						<var name="name2"/>
-						<var name="name1"/>
-					</vars>
-				</extract>
-			</if>
+
+			<varreplace name="$releaseTags" srcvar="$releaseTags" regex="[/]" replace=","/>
+
+			<!--Some use dots some use underscores, but replace all with spaces-->
+			<varreplace name="tags" srcvar="tags" regex="[._]" replace=" "/>
 
 			<extracttags srcvar="$releaseTags" split=",">
 				<setvarif varName="scene" value="Scene" newValue="true"/>
-
-				<setvarif varName="resolution" regex="^(?:SD|Standard?Def.*|480i|480p|576p|720p|810p|1080p|1080i|PD|Portable Device)$"/>
-				<setvarif varName="source" regex="^(?:R5|DVDScr|BRRip|CAM|TS|TELESYNC|TC|TELECINE|DSR|PDTV|HDTV|DVDRip|BDRip|DVDR|DVD|BluRay|Blu\-Ray|WEB\-DL|WEB|TVRip|HDDVD|HD\-DVD)$"/>
+				<setvarif varName="freeleech" value="Freeleech!" newValue="true"/>
+				<setvarif varName="resolution" regex="^(?:SD|Standard?Def.*|480i|480p|576p|720p|810p|1080p|1080i|2160p|PD|Portable Device)$"/>
+				<setvarif varName="source" regex="^(?:R5|DVDScr|BRRip|CAM|TS|TELESYNC|TC|TELECINE|DSR|PDTV|HDTV|DVDRip|BDRip|DVDR|DVD|BluRay|Blu\-Ray|WEBRip|WEB\-DL|WEB|TVRip|HDDVD|HD\-DVD)$"/>
 				<setvarif varName="encoder" regex="^(?:XviD|DivX|x264|h\.264|h264|mpeg2|VC\-1|VC1|WMV)$"/>
+				<setvarif varName="container" regex="^(?:AVI|MKV|VOB|MPEG|MP4|ISO|WMV|TS|M4V|M2TS)$"/>
 
 				<!--Ignored-->
 				<regex value=""/>
 			</extracttags>
 
 			<var name="torrentUrl">
+				<string value="https://"/>
 				<var name="$baseUrl"/>
 				<string value="torrents.php?action=download&amp;id="/>
 				<var name="$torrentId"/>

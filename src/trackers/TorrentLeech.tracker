@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -46,7 +46,7 @@
 		<server
 			network="TorrentLeech.org"
 			serverNames="irc.torrentleech.org"
-			channelNames="#torrentleech"
+			channelNames="#torrentleech,#tlannounces"
 			announcerNames="_AnnounceBot_"
 			/>
 	</servers>
@@ -67,7 +67,7 @@
 		</linepatterns>
 		<linematched>
 			<var name="torrentUrl">
-				<string value="http://"/>
+				<string value="https://"/>
 				<var name="$baseUrl"/>
 				<string value="rss/download/"/>
 				<var name="$torrentId"/>

@@ -16,57 +16,58 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
-   -
+   - THEGURUDK
    - ***** END LICENSE BLOCK ***** -->
 
 <trackerinfo
 	type="ng"
 	shortName="NG"
 	longName="NextGen"
-	siteName="nxtgn.org">
+	siteName="nxtgn.biz">
 
 	<settings>
-		<description text="Go to http://nxtgn.org/getrss.php to get the RSS feed link. Paste it (Ctrl+V) into the text box below to automatically extract passkey."/>
+		<description text="Go to http://nxtgn.biz/getrss.php to get the RSS feed link. Paste it (Ctrl+V) into the text box below to automatically extract passkey."/>
 		<passkey tooltiptext="The passkey in your NextGen RSS feed link."/>
 	</settings>
 
 	<servers>
 		<server
-			network="After-All"
-			serverNames="irc.after-all.org,eu.after-all.org,us.after-all.org,sleepless.after-all.org"
-			channelNames="#NG,#NG-Announce"
-			announcerNames="MrNG"
+			network="NExTGen"
+			serverNames="irc.nxtgn.biz"
+			channelNames="#Announce"
+			announcerNames="James"
 			/>
 	</servers>
 
 	<parseinfo>
-		<linepatterns>
-			<extract>
-				<!--~ [ TORRENT ] ~ [ UPLOADED ] ~[ HD ] ~ [ Surrogates.2009.MULTi.COMPLETE.BLURAY-SURROGATES ] ~ [ http://nxtgn.org/details.php?id=746 ] ~-->
-				<regex value="^\s*~\s*\[ TORRENT \]\s*~\s*\[ UPLOADED \]\s*~\s*\[([^\]]*)\]\s*~\s*\[(.*)\]\s*~\s*\[ https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)"/>
-				<vars>
-					<var name="category"/>
-					<var name="torrentName"/>
+			<linepatterns>
+				<extract>
+					<!--~ [ DSB ] ~ [ Game.of.Thrones.S03D01.Retail.DKSubs.NTSC.DVDR-DSB ] ~ [ 4.414 GB ] ~ [ http://nxtgn.biz/details.php?id=309699 ] ~-->
+					<regex value="^~\s*\[\s([^\]]*)\]\s~\s\[\s([^\]]*)\]\s~\s\[\s([^\]]*)\]\s~\s\[ https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)\ ]"/>
+					<vars>
+						<var name="category"/>
+						<var name="torrentName"/>
+						<var name="$torrentSize"/>
+						<var name="$baseUrl"/>
+						<var name="$torrentId"/>
+					</vars>
+				</extract>
+			</linepatterns>
+			<linematched>
+				<var name="torrentUrl">
+					<string value="http://"/>
 					<var name="$baseUrl"/>
+					<string value="download.php?id="/>
 					<var name="$torrentId"/>
-				</vars>
-			</extract>
-		</linepatterns>
-		<linematched>
-			<var name="torrentUrl">
-				<string value="http://"/>
-				<var name="$baseUrl"/>
-				<string value="download.php?id="/>
-				<var name="$torrentId"/>
-				<string value="&amp;passkey="/>
-				<var name="passkey"/>
-			</var>
-		</linematched>
-		<ignore>
-		</ignore>
+					<string value="&amp;passkey="/>
+					<var name="passkey"/>
+				</var>
+			</linematched>
+			<ignore>
+			</ignore>
 	</parseinfo>
 </trackerinfo>

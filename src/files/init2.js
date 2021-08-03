@@ -80,6 +80,16 @@ plugin.options =
 		hostname: "",
 		port: 21,
 	},
+	
+	announce:
+	{
+		sonarrPath: "",
+		sonarrApiKey: "",
+		radarrPath: "",
+		radarrApiKey: "",
+		hdtvDelay: "",
+		webDeley: "",
+	},
 };
 
 // ChatZilla doesn't call disable() when its window is closed.
@@ -509,6 +519,16 @@ function createUploadMethod()
 		{
 			basedir: "",
 			dyndir: "",
+		},
+		
+		sonarr:
+		{
+			altRn: false,
+		},
+		
+		radarr:
+		{
+			altRn: false,
 		},
 	};
 

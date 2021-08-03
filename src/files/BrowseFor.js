@@ -38,7 +38,6 @@ function doBrowseFor(typeName, id, title)
 {
 	try
 	{
-		netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
 
 		var textbox = document.getElementById(id);
 

@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -26,19 +26,22 @@
 <trackerinfo
 	type="ptm"
 	shortName="PTM"
-	longName="pretome"
-	siteName="preto.me">
+	longName="PreToMe"
+	siteName="pretome.info">
 
 	<settings>
-		<cookie_description/>
-		<cookie/>
+		<description text="Copy the RSS feed link. Paste it (Ctrl+V) into the text box below to automatically extract passkey."/>
+		<passkey
+			tooltiptext="The passkey in your PreToMe rss feed"
+			pasteRegex="[\?&amp;]key=([\da-fA-F]{32})"
+		/>
 	</settings>
 
 	<servers>
 		<server
 			network="PreToMe"
-			serverNames="irc.preto.me"
-			channelNames="#announce"
+			serverNames="irc.pretome.info"
+			channelNames="#announce,#pretome"
 			announcerNames="tehDude"
 			/>
 	</servers>
@@ -46,8 +49,17 @@
 	<parseinfo>
 		<linepatterns>
 			<extract>
-				<!--tehFIRE: [TV|XviD] Royal.Institution.Christmas.Lectures.2009.Part2.WS.PDTV.XviD-WATERS :: preGAP: 1m and 9s :: https://preto.me/details.php?id=127107-->
-				<!--tehFIRE|REQ: [Movies|XviD] Casanova.2005.DvDrip.AC3.XviD-PTM :: preGAP: P2P source :: https://preto.me/details.php?id=127124-->
+				<!--tehFIRE: [TV|x264] Newsreaders.S01E05.HDTV.x264-2HD https://pretome.info/details.php?id=333951-->
+				<regex value="tehFIRE(?:\|REQ)?: \[([^\]]*)\] ([^:]*) https?\:\/\/([^\/]+).*[&amp;\?]id=(\d+)"/>
+				<vars>
+					<var name="category"/>
+					<var name="torrentName"/>
+					<var name="$baseUrl"/>
+					<var name="$torrentId"/>
+				</vars>
+			</extract>
+			<extract>
+				<!--tehFIRE: [TV|XviD] Royal.Institution.Christmas.Lectures.2009.Part2.WS.PDTV.XviD-WATERS :: preGAP: 1m and 9s :: https://pretome.info/details.php?id=127107-->
 				<regex value="tehFIRE(?:\|REQ)?: \[([^\]]*)\] ([^:]*) :: preGAP: ([^:]*) :: https?\:\/\/([^\/]+).*[&amp;\?]id=(\d+)"/>
 				<vars>
 					<var name="category"/>
@@ -59,18 +71,27 @@
 			</extract>
 		</linepatterns>
 		<linematched>
+			<var name="scene">
+				<string value="false"/>
+			</var>
+
+			<if srcvar="preTime" regex="^\d+\s*\w+">
+				<var name="scene">
+					<string value="true"/>
+				</var>
+			</if>
+
 			<var name="torrentUrl">
 				<string value="https://"/>
 				<var name="$baseUrl"/>
 				<string value="/download.php/"/>
 				<var name="$torrentId"/>
 				<string value="/"/>
+				<var name="passkey"/>
+				<string value="/"/>
 				<varenc name="torrentName"/>
 				<string value=".torrent"/>
 			</var>
-			<http name="cookie">
-				<var name="cookie"/>
-			</http>
 		</linematched>
 		<ignore>
 		</ignore>

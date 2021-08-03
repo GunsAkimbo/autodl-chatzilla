@@ -556,6 +556,8 @@ function(doc, root, options)
 			elem = this.saveOptionsWebui(doc, options.webui);
 		else if (name === "ftp")
 			elem = this.saveOptionsFtp(doc, options.ftp);
+		else if (name === "announce")
+			elem = this.saveOptionsAnnounce(doc, options.announce);
 		else
 		{
 			elem = doc.createElement(name);
@@ -593,6 +595,20 @@ function(doc, webui)
 	return webuiElem;
 }
 
+plugin.saveOptionsAnnounce =
+function(doc, announce)
+{
+	var announceElem = doc.createElement("announce");
+
+	appendTextElement(doc, announceElem, "path-sonarr", announce.sonarrPath);
+	appendTextElement(doc, announceElem, "apikey-sonarr", announce.sonarrApiKey);
+	appendTextElement(doc, announceElem, "path-radarr", announce.radarrPath);
+	appendTextElement(doc, announceElem, "apikey-radarr", announce.radarrApiKey);
+	appendTextElement(doc, announceElem, "hdtv-delay", announce.hdtvDelay);
+	appendTextElement(doc, announceElem, "web-delay", announce.webDelay);
+
+	return announceElem;
+}
 plugin.saveOptionsTrackers =
 function(doc, options)
 {
@@ -663,6 +679,8 @@ function(doc, uploadMethod)
 	saveValue("tool-args", uploadMethod.tool.args, defaults.tool.args);
 	saveValue("dyndir-basedir", uploadMethod.dynamicDir.basedir, defaults.dynamicDir.basedir);
 	saveValue("dyndir-dyndir", uploadMethod.dynamicDir.dyndir, defaults.dynamicDir.dyndir);
+	saveValue("sonarr-alt-rn", uploadMethod.sonarr.altRn, defaults.sonarr.altRn);
+	saveValue("radarr-alt-rn", uploadMethod.radarr.altRn, defaults.radarr.altRn);
 
 	return modified ? uploadMethodElem : null;
 }
@@ -749,6 +767,8 @@ function(root, options)
 				this.readOptionsWebui(optElem, options.webui);
 			else if (nodeName === "ftp")
 				this.readOptionsFtp(optElem, options.ftp);
+			else if (nodeName === "announce")
+				this.readOptionsAnnounce(optElem, options.announce);
 			else if (nodeName === "userAgent")
 			{
 				if (value !== 'FireFox 3.5')
@@ -808,6 +828,17 @@ function(elem, webui)
 	webui.https = readTextNodeBoolean(elem, "ssl", false);
 }
 
+plugin.readOptionsAnnounce =
+function(elem, announce)
+{
+	announce.sonarrPath = readTextNode(elem, "path-sonarr", "");
+	announce.sonarrApiKey = readTextNode(elem, "apikey-sonarr", "");
+	announce.radarrPath = readTextNode(elem, "path-radarr", "");
+	announce.radarrApiKey = readTextNode(elem, "apikey-radarr", "");
+	announce.hdtvDelay = readTextNodeInteger(elem, "hdtv-delay", 1, 1, 65535);
+	announce.webDelay = readTextNodeInteger(elem, "web-delay", 1, 1, 65535);
+}
+
 plugin.readOptionsTrackers =
 function(root, options)
 {
@@ -855,6 +886,9 @@ function(elem, uploadMethod)
 	uploadMethod.tool.args = readTextNode(elem, "tool-args", defaults.tool.args);
 	uploadMethod.dynamicDir.basedir = readTextNode(elem, "dyndir-basedir", defaults.dynamicDir.basedir);
 	uploadMethod.dynamicDir.dyndir = readTextNode(elem, "dyndir-dyndir", defaults.dynamicDir.dyndir);
+	uploadMethod.sonarr.altRn = readTextNodeBoolean(elem, "sonarr-alt-rn", defaults.overrideGlobal);
+	uploadMethod.radarr.altRn = readTextNodeBoolean(elem, "radarr-alt-rn", defaults.overrideGlobal);
+	
 }
 
 // <= v2.0.1

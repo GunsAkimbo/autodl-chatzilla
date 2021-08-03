@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -27,7 +27,8 @@
 	type="waffles"
 	shortName="Waffles"
 	longName="Waffles"
-	siteName="waffles.fm">
+	siteName="waffles.fm"
+	follow302links="true">
 
 	<settings>
 		<description text="Paste (Ctrl+V) any Waffles torrent download link into any one of the two text boxes below to automatically extract passkey and uid."/>
@@ -57,10 +58,9 @@
 	<parseinfo>
 		<linepatterns>
 			<extract>
-				<!--[Hip-Hop/Rap]: Dave Ghetto - Love Life? [2005-CD-MP3-320-Log] - http://waffles.fm/details.php?id=619559-->
-				<regex value="^\[([^\]]*)\]:(.*)-\s*https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)"/>
+				<!--Eminem - Slim Shady LP [1999/CD/FLAC/Lossless] - https://www.waffles.fm/details.php?id=919362-->
+				<regex value="(.*)-\s*https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)"/>
 				<vars>
-					<var name="category"/>
 					<var name="torrentName"/>
 					<var name="$baseUrl"/>
 					<var name="$torrentId"/>
@@ -85,13 +85,13 @@
 
 			<!--Get year-->
 			<extract srcvar="$releaseTags" optional="true">
-				<regex value="(?:^|[\[\-])\s*((?:18|19|20)\d\d)\s*(?:$|[\]\-])"/>
+				<regex value="(?:^|[\[\/])\s*((?:18|19|20)\d\d)\s*(?:$|[\]\/])"/>
 				<vars>
 					<var name="year"/>
 				</vars>
 			</extract>
 
-			<varreplace name="tags" srcvar="$releaseTags" regex="[\-]" replace=", "/>
+			<varreplace name="tags" srcvar="$releaseTags" regex="[\/]" replace=", "/>
 
 			<extractone>
 				<extract srcvar="torrentName">
@@ -123,7 +123,7 @@
 			<!--If (Scene) is found, set media to WEB-->
 			<setregex srcvar="torrentName" regex="\(scene\)" varName="scene" newValue="true"/>
 
-			<extracttags srcvar="$releaseTags" split="-">
+			<extracttags srcvar="$releaseTags" split="/">
 				<setvarif varName="format" regex="^(?:MP3|FLAC|Ogg|AAC|AC3|DTS)$"/>
 
 				<setvarif varName="bitrate" regex="Lossless$"/>
@@ -140,7 +140,7 @@
 			</extracttags>
 
 			<var name="torrentUrl">
-				<string value="http://"/>
+				<string value="https://"/>
 				<var name="$baseUrl"/>
 				<string value="download.php/"/>
 				<var name="uid"/>
@@ -152,6 +152,7 @@
 				<var name="passkey"/>
 				<string value="&amp;uid="/>
 				<var name="uid"/>
+				<string value="&amp;rss=1"/>
 			</var>
 		</linematched>
 		<ignore>

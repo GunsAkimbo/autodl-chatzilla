@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - David Nilsson.
-   - Portions created by the Initial Developer are Copyright (C) 2010
+   - Portions created by the Initial Developer are Copyright (C) 2010, 2011
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -32,7 +32,7 @@
 
 	<settings>
 		<description text="Copy the RSS feed link. Paste it (Ctrl+V) into the text box below to automatically extract passkey."/>
-		<authkey />
+		<passkey tooltiptext="The passkey in your FunFile RSS feed link."/>
 	</settings>
 
 	<servers>
@@ -45,7 +45,7 @@
 	</servers>
 
 	<parseinfo>
-		<linepatterns>
+		<multilinepatterns>
 			<extract>
 				<!--[New Shit] S.W.A.T.Firefight.2011.PROPER.NTSC.MULTi.DVDR-BonG [Movies] @ https://www.funfile.org/details.php?id=131267-->
 				<regex value="^\[New Shit\] (.*) \[([^\]]+)\] @ https?\:\/\/([^\/]+\/).*[&amp;\?]id=(\d+)"/>
@@ -56,15 +56,29 @@
 					<var name="$torrentId"/>
 				</vars>
 			</extract>
-		</linepatterns>
+			<extract optional="true">
+				<!--[Scene] Uploaded 33 secs after pre-->
+				<regex value="^(\[Scene\])\s+Uploaded(.*)after pre"/>
+				<vars>
+					<var name="$scene"/>
+					<var name="preTime"/>
+				</vars>
+			</extract>
+		</multilinepatterns>
 		<linematched>
+			<var name="scene">
+				<string value="false"/>
+			</var>
+
+			<setregex srcvar="$scene" regex="Scene" varName="scene" newValue="true"/>
+
 			<var name="torrentUrl">
 				<string value="https://"/>
 				<var name="$baseUrl"/>
 				<string value="download.php/"/>
 				<var name="$torrentId"/>
 				<string value="/"/>
-				<var name="authkey"/>
+				<var name="passkey"/>
 				<string value="/"/>
 				<varenc name="torrentName"/>
 				<string value=".torrent"/>

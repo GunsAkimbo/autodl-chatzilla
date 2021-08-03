@@ -56,8 +56,6 @@ function(ti, filename, forceHttps)
 		return;
 	}
 
-	message(3, "Matched " + this.getTorrentInfoString(ti), MT_STATUS);
-
 	var filedownload = new HttpRequest();
 	if (ti.tracker.follow302)
 		filedownload.setFollowNewLocation();
@@ -68,7 +66,16 @@ function(ti, filename, forceHttps)
 	filedownload.filename = convertToValidPathName(ti.tracker.type + "-" + filename);
 	filedownload.startTime = newDate();
 	filedownload.downloadUrl = forceHttps ? filedownload.ti.torrentSslUrl : filedownload.ti.torrentUrl;
-	filedownload.sendGetRequest(filedownload.downloadUrl, ti.httpHeaders, this.getHandler_onTorrentDownloaded());
+	
+	if (filedownload.ti.uploadMethod.type == UPLOAD_SONARR || filedownload.ti.uploadMethod.type == UPLOAD_RADARR)
+	{
+		this.onTorrentUploadWait(filedownload);
+	}
+	else
+	{
+		message(3, "Downloading torrent for some reason", MT_STATUS);
+		filedownload.sendGetRequest(filedownload.downloadUrl, ti.httpHeaders, this.getHandler_onTorrentDownloaded());
+	}
 }
 
 plugin.getHandler_onTorrentDownloaded =
@@ -154,6 +161,7 @@ function(filedownload)
 	var uploadDelaySecs = readTrackerOption(filedownload.ti.tracker, "uploadDelaySecs");
 	if (!uploadDelaySecs)
 	{
+		message(4, "Matched " + this.getTorrentInfoString(filedownload.ti), MT_STATUS);
 		this.onTorrentFileDownloaded(filedownload);
 	}
 	else
@@ -163,11 +171,17 @@ function(filedownload)
 			torrentName: filedownload.ti.torrentName,
 			tracker: filedownload.ti.tracker,
 		});
-		message(3, msg, MT_STATUS);
+		message(4, msg, MT_STATUS);
 
 		var this_ = this;
 		setTimeout(function()
 		{
+			if (!this_.downloadHistory.canDownload(filedownload.ti))
+			{
+				this_.releaseAlreadyDownloaded(filedownload.ti);
+				return;
+			}
+			message(4, "Matched " + this_.getTorrentInfoString(filedownload.ti), MT_STATUS);
 			this_.onTorrentFileDownloaded(filedownload);
 		}, uploadDelaySecs * 1000);
 	}
@@ -184,6 +198,8 @@ function(filedownload)
 	case UPLOAD_FTP:			return this.sendTorrentFileFtp(filedownload); break;
 	case UPLOAD_TOOL:			return this.runProgram(filedownload); break;
 	case UPLOAD_UTORRENT_DIR:	return this.runUtorrentDir(filedownload); break;
+	case UPLOAD_SONARR:			return this.announceSonarr(filedownload,false);break;
+	case UPLOAD_RADARR:			return this.announceSonarr(filedownload,true);break;
 	default:					message(0, "Upload type not implemented, type: " + filedownload.ti.uploadMethod.type); break;
 	}
 }
@@ -207,7 +223,14 @@ function(ti, torrentPathName, info_hash)
 plugin.addDownload =
 function(filedownload)
 {
-	this.downloadHistory.addDownload(filedownload.ti, filedownload.downloadUrl);
+	try
+	{
+		this.downloadHistory.addDownload(filedownload.ti, filedownload.downloadUrl);
+	}
+	catch (ex)
+	{
+		message(0,ex,MT_ERROR);
+	}
 }
 
 plugin.runUtorrentDir =
@@ -441,6 +464,159 @@ function(errorMessage, commandResults, filedownload)
 	this.onTorrentFileUploaded(filedownload, "Uploaded torrent (webui)");
 }
 
+//Send post requests for Sonarr/Radarr
+plugin.post = 
+function(path, apikey, params,filedownload)
+{
+	var json_params = JSON.stringify(params);
+	var this_ = this;
+	var request = new XMLHttpRequest();
+	request.onreadystatechange= function () {
+		if (request.readyState==4 && request.status == 200) {
+			try
+			{
+				this_.onPostResponse(JSON.parse(request.responseText),filedownload);
+			}
+			catch (ex)
+			{
+				message(0, "JSON parse error: " + formatException(ex), MT_ERROR);
+			}
+
+		}
+	}
+	request.open("POST", path, true);
+	request.setRequestHeader("X-Api-Key", apikey);
+	request.setRequestHeader("Content-Type","application/json");
+	request.send(json_params);
+}
+
+plugin.onPostResponse = 
+function(response, filedownload)
+{
+	if (response.approved)
+	{
+		this.onTorrentFileUploaded(filedownload, "APPROVED");
+	}
+	else
+	{
+		this.onTorrentFileUploaded(filedownload, "DENIED");
+	}
+}
+
+//Try to build a scene-esque release name for trackers that don't utilize scene naming
+plugin.sceneStringBuilder =
+function(filedownload)
+{	
+	var alt_release_name = ""
+	if(filedownload.ti.name1)
+	{
+		alt_release_name = filedownload.ti.name1.replace(/ /g,".");
+	}
+	if(filedownload.ti.year)
+	{
+		alt_release_name = alt_release_name + "." + filedownload.ti.year;
+	}
+	if(filedownload.ti.season)
+	{
+		alt_release_name = alt_release_name + ".S" + filedownload.ti.season;
+	}
+	if (filedownload.ti.episode)
+	{
+		alt_release_name = alt_release_name + ".E" + filedownload.ti.episode;
+	}
+	if (filedownload.ti.resolution)
+	{
+		alt_release_name = alt_release_name + "." +  filedownload.ti.resolution;
+	}
+	if (filedownload.ti.source)
+	{
+		alt_release_name = alt_release_name + "." + filedownload.ti.source;
+	}
+	if (filedownload.ti.encoder)
+	{
+		alt_release_name = alt_release_name + "." + filedownload.ti.encoder;
+	}
+	return alt_release_name;
+}
+
+plugin.announceSonarr =
+function(filedownload, isRadarr)
+{
+	if (!this.downloadHistory.canDownload(filedownload.ti))
+	{
+		this.releaseAlreadyDownloaded(filedownload.ti);
+		return;
+	}
+	
+	if (filedownload.ti.uploadMethod.sonarr.altRn && !isRadarr)
+	{
+		release_name = this.sceneStringBuilder(filedownload);
+		message(4, release_name, MT_STATUS);
+	}
+	else if (filedownload.ti.uploadMethod.radarr.altRn && isRadarr)
+	{
+		release_name = this.sceneStringBuilder(filedownload);
+		message(4, release_name, MT_STATUS);
+	}
+	else
+	{
+		release_name = filedownload.ti.torrentName;
+	}
+	
+	if(isRadarr)
+	{
+		var url = plugin.options.announce.radarrPath + "/release/push";
+	}
+	else
+	{
+		var url = plugin.options.announce.sonarrPath + "/release/push";
+	}
+
+	if(isRadarr)
+	{
+		var apikey = plugin.options.announce.radarrApiKey;
+	}
+	else
+	{
+		var apikey = plugin.options.announce.sonarrApiKey;
+	}
+
+	
+	var params =
+	{	
+		"title"			: release_name,
+		'downloadUrl'	: filedownload.downloadUrl,
+		'protocol'		: 'torrent',
+		'publishDate'	: filedownload.startTime.toISOString(),
+		'indexer'		: filedownload.ti.tracker.shortName,
+	}
+	
+	//message(3,filedownload.ti.torrentName + " : " + plugin.options.announce.hdtvDelay + " : " + filedownload.ti.source + " : " + filedownload.ti.resolution, MT_STATUS)
+	var this_ = this;
+	if (plugin.options.announce.hdtvDelay && filedownload.ti.source.toLowerCase().indexOf("tv") != -1 && (filedownload.ti.resolution != "720p" && filedownload.ti.resolution != "1080p"))
+	{
+		this.addDownload(filedownload);
+		message(4, "Delaying HDTV release: " + release_name, MT_STATUS)
+		setTimeout(function()
+		{
+			this_.post(url,apikey,params,filedownload);
+		}, plugin.options.announce.hdtvDelay * 1000);
+		return;
+	}
+	else if (plugin.options.announce.webDelay && filedownload.ti.source.toLowerCase().indexOf("web") != -1 && filedownload.ti.resolution != "1080p")
+	{
+		this.addDownload(filedownload);
+		message(4, "Delaying WEB release: " + release_name, MT_STATUS)
+		setTimeout(function()
+		{
+			this_.post(url,apikey,params,filedownload);
+		}, plugin.options.announce.webDelay * 1000);
+		return;
+	}
+	this.post(url,apikey,params,filedownload);
+	this.addDownload(filedownload);
+}
+
 function saveFileInternal(directory, filename, data)
 {
 	var localFile = nsLocalFile(directory ? directory : plugin.fileCwd.path);
@@ -490,7 +666,15 @@ function(filedownload, message)
 	this.displayTotalTime(filedownload, newDate(), message);
 
 	var scriptExecOptions = this.options.scriptExecOptions;
-	var hash = toHexString(filedownload.info_hash);
+	if (filedownload.info_hash)
+	{
+		var hash = toHexString(filedownload.info_hash);
+	}
+	else
+	{
+		var hash = null;
+	}
+	
 	if (scriptExecOptions.uploaded.scriptName)
 	{
 		var scriptExec = new ScriptExec(scriptExecOptions.uploaded.scriptName, hash, filedownload.ti,
